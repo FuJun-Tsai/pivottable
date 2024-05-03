@@ -10,7 +10,7 @@
     :value="option"
     :selected="option === props.value"
     >
-      {{ option }}
+      {{ props.locale[option] }}
     </option>
   </select>
 </template>
@@ -23,6 +23,9 @@ const props = defineProps({
   },
   value: {
     type: String
+  },
+  locale: {
+    type: Object
   }
 });
 

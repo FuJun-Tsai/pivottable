@@ -13,11 +13,13 @@
     :cols="props.cols"
     :rows="props.rows"
     :vals="props.vals"
+    :valueFilter="valueFilter"
     :rowTotal="props.rowTotal"
     :colTotal="props.colTotal"
     :sorters="props.sorters"
     :locales="props.locales"
     :locale="props.locale"
+    @treeDataExport="treeDataExport"
     >
     </TableRenderer>
   </div>
@@ -141,4 +143,16 @@ const props = defineProps({
   },
 });
 
+const valueFilter = ref({});
+valueFilter.value = props.title.reduce((titleObj, title, titleIndex) => {
+  titleObj[title] = props.data.reduce((dataObj, data) => {
+    dataObj[data[titleIndex]] = false;
+    return dataObj;
+  }, {});
+  return titleObj;
+}, {});
+
+const treeDataExport = function(val){
+  console.log(val);
+}
 </script>

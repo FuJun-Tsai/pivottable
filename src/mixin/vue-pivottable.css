@@ -81,7 +81,7 @@ table.pvtTable tbody tr td {
 .pvtVals {
   border: 1px solid #a2b1c6;
   background: #fff;
-  padding: 5px;
+  padding: 8px;
   min-width: 20px;
   min-height: 20px;
 }
@@ -96,6 +96,7 @@ table.pvtTable tbody tr td {
 }
 
 .pvtRenderers {
+  padding: 8px;
   border: 1px solid #a2b1c6;
   user-select: none;
   width: 25%;
@@ -114,6 +115,7 @@ table.pvtTable tbody tr td {
   }
 }
 .pvtDropdown {
+  width: 100%;
   border: 1px solid #a2b1c6;
   align-items: center;
   display: block;
@@ -126,7 +128,7 @@ table.pvtTable tbody tr td {
   font-weight: bold;
   outline: none;
   line-height: 1 !important;
-  margin: 3px;
+  /* margin: 3px; */
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -135,8 +137,8 @@ table.pvtTable tbody tr td {
 }
 
 .pvtRenderers .pvtDropdown {
-  padding: 0px 0px 0px 12px;
-  border: none;
+  /* padding: 0px 0px 0px 12px; */
+  /* border: none; */
   width: 100%;
   margin: 0px;
 }
@@ -166,15 +168,16 @@ table.pvtTable tbody tr td {
   border-radius: 5px;
   border: 1px dashed #a2b1c6;
 }
-.pvtAxisContainer li.pvtPlaceholder span.pvtAttr {
+.pvtAxisContainer li.pvtPlaceholder .pvtAttr {
   display: none;
 }
 
-.pvtAxisContainer span.pvtAttr {
+.pvtAxisContainer .pvtAttr {
+  display: inline-block;
   -webkit-text-size-adjust: 100%;
   background: #f3f6fa;
   border: 2px dashed #c8d4e3;
-  padding: 4px 7px;
+  padding: 4px 8px;
   white-space: nowrap;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -185,10 +188,10 @@ table.pvtTable tbody tr td {
   -khtml-user-select: none;
   -ms-user-select: none;
 }
-.pvtAxisContainer li span.pvtAttr.sortonly {
+.pvtAxisContainer li .pvtAttr.sortonly {
   border: 1px solid #c8d4e3;
 }
-.pvtAxisContainer li span.pvtAttr.disabled {
+.pvtAxisContainer li .pvtAttr.disabled {
   border: 1px solid #c8d4e3;
   color: #c5c5c5;
   cursor: not-allowed;
@@ -335,4 +338,20 @@ table.pvtTable tbody tr td {
 
 .pvtRendererArea {
   padding: 5px;
+}
+
+
+/* customer */
+td{
+  vertical-align: top;
+}
+
+.exportBtn{
+  cursor: pointer;
+  user-select:none;
+  background: #f3f6fa;
+  border: 2px dashed #c8d4e3;
+  padding: 4px 8px;
+  white-space: nowrap;
+  border-radius: 5px;
 }

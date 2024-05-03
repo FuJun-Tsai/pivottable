@@ -103,9 +103,12 @@
       </tr>
     </tbody>
   </table>
+  <div style="padding: 12px;">
+    <span class="exportBtn" @click="treeDataExport">輸出資料</span>
+  </div>
 </template>
 <script setup>
-import { defineProps, computed } from 'vue';
+import { defineProps, defineEmits, computed } from 'vue';
 import { PivotData } from '@/helper/utils';
 import { aggregators } from './../helper/utils';
 
@@ -253,13 +256,20 @@ const props = defineProps({
     }
   }
 });
+const emits = defineEmits(['treeDataExport']);
 
 const pivotData = computed(()=>{
   let obj = JSON.parse(JSON.stringify(props));
   obj.data = [obj.title, ...obj.data];
-  obj.aggregators = props.aggregators;
-  return new PivotData(obj)
+  obj.aggregators = aggregators;
+
+  return new PivotData(obj);
 });
+
+const treeData = computed(()=>pivotData.value && pivotData.value.tree);
+const treeDataExport = function(){
+  emits('treeDataExport', treeData.value);
+};
 
 const spanSize = function(arr, i, j){
   // helper function for setting row/col-span in pivotTableRenderer
@@ -310,6 +320,7 @@ let colTotalColors = () => { }
 
 </script>
 <style lang="scss">
+@import '@/mixin/vue-pivottable.css';
 .pvtTable{
   margin: 0 auto;
 }

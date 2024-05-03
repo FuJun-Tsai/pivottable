@@ -1,23 +1,7 @@
 <template>
   <div>
-    <h2>thePivottable</h2>
-    <thePivottable
-    :title="pivotTitle"
-    :data="pivotData"
-    :rendererName="pivotRendererName"
-    :aggregatorName="pivotAggregatorName"
-    :cols="pivotCols"
-    :rows="pivotRows"
-    :vals="pivotValues"
-    :sorters="sorters"
-    :locales="locales"
-    :locale="'en'"
-    >
-    </thePivottable>
-  </div>
-  <div>
     <h2>thePivottableUI</h2>
-    <!-- <PivottableUi
+    <PivottableUi
     :title="pivotTitle"
     :data="pivotData"
     :rendererName="pivotRendererName"
@@ -30,76 +14,14 @@
     :locales="locales"
     :locale="'tw'"
     >
-    </PivottableUi> -->
-    <!-- <table class="pvtUi">
-      <tbody>
-        第一層
-        <tr>
-          <td class="pvtRenderers">
-            <theDropdown
-            :values="values"
-            :value="value"
-            @handleChange="handleChange"
-            >
-            </theDropdown>
-          </td>
-          <td class="pvtAxisContainer pvtUnused pvtHorizList">
-          </td>
-        </tr>
-
-        第二層
-        <tr>
-          <td class="pvtVals">
-            <VueDraggable v-model="vals" group="keys">
-              <span v-for="item in vals" :key="item">
-                {{ item }}
-              </span>
-            </VueDraggable>
-          </td>
-          <td class="pvtAxisContainer pvtHorizList pvtCols">
-            <VueDraggable v-model="cols" group="keys">
-              <span v-for="item in cols" :key="item">
-                {{ item }}
-              </span>
-            </VueDraggable>
-          </td>
-        </tr>
-
-        第三層
-        <tr>
-          <td class="pvtAxisContainer pvtVertList pvtRows">
-            <VueDraggable v-model="rows" group="keys">
-              <span v-for="item in rows" :key="item">
-                {{ item }}
-              </span>
-            </VueDraggable>
-          </td>
-          <td>
-            <thePivottable
-            :data="[pivotTitle, ...pivotData]"
-            :rendererName="pivotRendererName"
-            :aggregatorName="pivotAggregatorName"
-            :cols="pivotCols"
-            :rows="pivotRows"
-            :vals="pivotValues"
-            :sorters="sorters"
-            :locales="locales"
-            :locale="'en'"
-            >
-            </thePivottable>
-          </td>
-        </tr>
-      </tbody>
-    </table> -->
+    </PivottableUi>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue';
-import thePivottable from '@/components/thePivottable';
 import PivottableUi from '@/components/PivottableUi';
 import { PivotUtilities } from '@/mixin/index';
 
-// VuePivottable
 const pivotTitle = ref(['消費日期', '顧客姓名', '商品種類', '顏色', '單品價格', '銷售數量', '銷售總額', '顧客等級', '銷售店鋪', '銷售人員']);
 const pivotData = ref([
   [ '2020/1/1', 'H',	'女包1', '紅色', '200', '2', '400', 'VIP',	'台北', 'S12' ],

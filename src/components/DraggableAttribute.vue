@@ -20,12 +20,11 @@
         ▾
       </span>
       <div
-      v-if="open"
+      v-if="props.filterOpening"
       class="pvtFilterBox"
       style="padding: 4px;"
-      :style="{'z-index': props.zIndex}"
-      @click="moveFilterBoxToTop(props.name)"
       >
+      <!-- @click="moveFilterBoxToTop(props.name)" -->
         <div class="pvtSearchContainer" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;">
           <input
           type="text"
@@ -37,9 +36,7 @@
             清除
           </button>
         </div>
-        <div
-        style="display: flex; justify-content: center; gap: 4px;"
-        >
+        <div style="display: flex; justify-content: center; gap: 4px;">
           <button class="pvtButton">
             全選
           </button>
@@ -48,20 +45,32 @@
           </button>
         </div>
         <div class="pvtCheckContainer">
-          <p
+          <!-- <p
           v-for="item in (filterText !== '' ? props.attrValues.filter(item => item.includes(filterText)) : props.attrValues)"
           :key="item"
+          > -->
+          <label
+          v-for="(value, key) in props.option"
+          :key="key"
+          :for="key"
+          style="display: block; width: 100%;"
+          @click.self="valueFilterUpdate(key)"
           >
-            <input type="checkbox">
-            <span>{{ item }}</span>
-          </p>
+            <input
+            type="checkbox"
+            :id="key"
+            :checked="option[key] === false"
+            @click="valueFilterUpdate(key)"
+            >
+            <span>{{ key }}</span>
+          </label>
         </div>
       </div>
     </span>
   </div>
 </template>
 <script setup>
-import { defineProps, defineEmits, computed, ref } from 'vue';
+import { defineProps, defineEmits, computed, ref, watch } from 'vue';
 
 const props = defineProps({
   sortable: {
@@ -114,15 +123,17 @@ const props = defineProps({
   unused: {
     type: Boolean
   },
-});
 
-const emits = defineEmits(['no:filterbox', 'moveToTop:filterbox'])
+  option: {
+    type: Object
+  },
+  filterOpening: {
+    type: Boolean
+  }
+});
+const emits = defineEmits(['filterToggle', 'valueFilterUpdate']);
 
 const filterText = ref('');
-const attribute = ref('');
-const values = ref([]);
-const filter = ref({});
-const open = ref(false);
 
 const disabled = computed(()=>{
   return !props.sortable && !props.draggable;
@@ -133,7 +144,11 @@ const sortonly = computed(()=>{
 });
 
 const toggleFilterBox = function(e){
-  open.value = !open.value;
+  let obj = {
+    title: props.name,
+    isOpen: !props.filterOpening
+  }
+  emits('filterToggle', obj);
   e.stopPropagation()
   if (!props.attrValues) {
     // if (props.$attrs['no:filterbox']) {
@@ -143,7 +158,16 @@ const toggleFilterBox = function(e){
   }
   // openFilterBox(props.name, !props.open)
   // moveFilterBoxToTop(props.name)
+};
+
+const valueFilterUpdate = function(key){
+  let obj = {
+    title: props.name,
+    key: key
+  }
+  emits('valueFilterUpdate', obj);
 }
+
 
 // const openFilterBox = function(attribute, open){
 //   emits('no:filterbox', {attribute, open})
