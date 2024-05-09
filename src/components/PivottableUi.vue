@@ -8,7 +8,7 @@
         >
           <!-- rendererName -->
           <template v-if="false">
-            <span>呈現方式</span>
+            <p>呈現方式</p>
             <theDropdown
             :values="Object.keys(rendererOption)"
             :value="rendererName"
@@ -21,14 +21,15 @@
         class="pvtAxisContainer pvtUnused pvtHorizList"
         @click.self="filterAllClose"
         >
-          <span>欄位</span>
+          <p>欄位</p>
           <VueDraggable
           style="display: flex; justify-content: center; gap: 4px;"
           v-model="titles"
           group="keys"
-          filter=".pvtFilterBox"
+          handle=".pvtAttr"
           preventOnFilter="false"
           >
+          <!-- filter=".pvtAttr" -->
             <DraggableAttribute
             v-for="item in titles"
             :name="item"
@@ -49,38 +50,49 @@
         @click.self="filterAllClose"
         >
           <!-- aggregatorName -->
-          <span>統計方式</span>
+          <p>統計方式</p>
           <theDropdown
           style="margin-bottom: 8px;"
-          :values="Object.keys(aggregators)"
+          :values="props.aggregatorlocale"
           :value="aggregatorName"
-          :locale="props.aggregatorlocale"
           @handleChange="aggregatorSelect"
           >
           </theDropdown>
-          <VueDraggable
-          style="display: flex; justify-content: center; gap: 4px;"
-          v-model="vals"
-          group="keys"
-          >
-            <DraggableAttribute
-            v-for="item in vals"
-            :name="item"
-            :key="item"
-            >
-              {{ item }}
-            </DraggableAttribute>
-          </VueDraggable>
+
+          <p>統計值</p>
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+            <span v-if="aggregatorName === 'Sum over Sum'">分子</span>
+            <theDropdown
+            v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(aggregatorName) === false"
+            style="margin-bottom: 8px;"
+            :values="titleOption"
+            :value="vals[0]"
+            @handleChange="titleSelect($event, 0)"
+            />
+          </div>
+
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+            <span v-if="aggregatorName === 'Sum over Sum'">分母</span>
+            <theDropdown
+            v-if="aggregatorName === 'Sum over Sum'"
+            style="margin-bottom: 8px;"
+            :values="titleOption"
+            :value="vals[1]"
+            @handleChange="titleSelect($event, 1)"
+            />
+          </div>
         </td>
         <td
         class="pvtAxisContainer pvtHorizList pvtCols"
         @click.self="filterAllClose"
         >
-          <span>欄標籤</span>
+          <p>欄標籤</p>
           <VueDraggable
           style="display: flex; justify-content: center; gap: 4px;"
           v-model="cols"
           group="keys"
+          handle=".pvtAttr"
+          preventOnFilter="false"
           >
             <DraggableAttribute
             v-for="item in cols"
@@ -89,6 +101,7 @@
             :option="valueFilter[item]"
             :filterOpening="filterOpen[item]"
             @filterToggle="filterToggle"
+            @valueFilterUpdate="valueFilterUpdate"
             >
               {{ item }}
             </DraggableAttribute>
@@ -100,11 +113,13 @@
         class="pvtAxisContainer pvtVertList pvtRows"
         @click.self="filterAllClose"
         >
-          <span>列標籤</span>
+          <p>列標籤</p>
           <VueDraggable
-          style="display: flex; flex-direction: column; justify-content: center; gap: 4px;"
+          style="display: flex; flex-direction: column; justify-content: center; align-items:center; gap: 4px;"
           v-model="rows"
           group="keys"
+          handle=".pvtAttr"
+          preventOnFilter="false"
           >
             <DraggableAttribute
             v-for="item in rows"
@@ -113,13 +128,14 @@
             :option="valueFilter[item]"
             :filterOpening="filterOpen[item]"
             @filterToggle="filterToggle"
+            @valueFilterUpdate="valueFilterUpdate"
             >
               {{ item }}
             </DraggableAttribute>
           </VueDraggable>
         </td>
         <td
-        style="border: 1px solid #a2b1c6;"
+        style="border: 1px solid #a2b1c6; padding: 8px;"
         @click.self="filterAllClose"
         >
           <TableRenderer
@@ -145,14 +161,16 @@
     </tbody>
   </table>
 </template>
+
 <script setup>
-import { defineProps, ref } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
 import theDropdown from './theDropdown.vue';
 import TableRenderer from './TableRenderer.vue';
 import DraggableAttribute from './DraggableAttribute.vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import { aggregators } from './../helper/utils';
 import ScrollRenderer from '@/mixin/scroll-renderer';
+// import PlotlyRenderer from '@/mixin/plotly-renderer';
 
 const props = defineProps({
   title: {
@@ -265,9 +283,18 @@ const props = defineProps({
   },
 
 });
+const emits = defineEmits(['treeDataExport']);
+
+const titleOption = props.title.reduce((obj, item) => {
+  obj[item] = item;
+  return obj;
+}, {});
+const titleSelect = function(title, index){
+  vals.value[index] = title;
+}
 
 const titles = ref([]);
-titles.value = props.title.filter(item => [...props.cols, ...props.rows, ...props.vals].includes(item) === false);
+titles.value = props.title.filter(item => [...props.cols, ...props.rows].includes(item) === false);
 const cols = ref(props.cols);
 const rows = ref(props.rows);
 const vals = ref(props.vals);
@@ -300,12 +327,12 @@ const valueFilterUpdate = function(obj){
 }
 
 const rendererOption = ref({
-  // 'Table': TableRenderer.Table,
+  'Table': TableRenderer.Table,
   'Scroll Table': ScrollRenderer.Table,
   'Table Heatmap': ScrollRenderer['Table Heatmap'],
-  // 'Table Col Heatmap': TableRenderer['Table Col Heatmap'],
-  // 'Table Row Heatmap': TableRenderer['Table Row Heatmap'],
-  // 'Export Table TSV': TableRenderer['Export Table TSV'],
+  'Table Col Heatmap': TableRenderer['Table Col Heatmap'],
+  'Table Row Heatmap': TableRenderer['Table Row Heatmap'],
+  'Export Table TSV': TableRenderer['Export Table TSV'],
   // 'Grouped Column Chart': PlotlyRenderer['Grouped Column Chart'],
   // 'Stacked Column Chart': PlotlyRenderer['Stacked Column Chart'],
   // 'Grouped Bar Chart': PlotlyRenderer['Grouped Bar Chart'],
@@ -330,7 +357,7 @@ const aggregatorSelect = function(val){
 }
 
 const treeDataExport = function(val){
-  console.log(val);
+  emits('treeDataExport', val);
 }
 
 </script>

@@ -19,6 +19,7 @@ const numberFormat = function (optsIn) {
     suffix: ''
   }
   const opts = Object.assign({}, defaults, optsIn)
+
   return function (x) {
     if (isNaN(x) || !isFinite(x)) {
       return ''

@@ -103,9 +103,9 @@
       </tr>
     </tbody>
   </table>
-  <div style="padding: 12px;">
-    <span class="exportBtn" @click="treeDataExport">輸出資料</span>
-  </div>
+  <p style="padding: 12px;" v-if="props.aggregatorName !== 'List Unique Values'">
+    <span class="exportBtn" @click="treeDataExport">輸出圖表</span>
+  </p>
 </template>
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue';

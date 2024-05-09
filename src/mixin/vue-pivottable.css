@@ -15,7 +15,7 @@
   -moz-user-select: none;
   -khtml-user-select: none;
   -ms-user-select: none;
-  border-radius: 5px ;
+  border-radius: 4px ;
 }
 .pvtUi td {
   overflow-x: auto;
@@ -121,7 +121,7 @@ table.pvtTable tbody tr td {
   display: block;
   background-color: transparent;
   background-image: none;
-  border-radius: 0px;
+  border-radius: 4px;
   padding: 0px 0px 0px 3px;
   height: 40px;
   font-size: 15px;
@@ -162,10 +162,10 @@ table.pvtTable tbody tr td {
   cursor: move;
 }
 .pvtAxisContainer li.pvtPlaceholder {
-  -webkit-border-radius: 5px;
+  -webkit-border-radius: 4px;
   padding: 3px 15px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
   border: 1px dashed #a2b1c6;
 }
 .pvtAxisContainer li.pvtPlaceholder .pvtAttr {
@@ -179,9 +179,9 @@ table.pvtTable tbody tr td {
   border: 2px dashed #c8d4e3;
   padding: 4px 8px;
   white-space: nowrap;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -235,7 +235,7 @@ table.pvtTable tbody tr td {
   border: 1px solid;
   border-color: #c8d4e3;
   font-size: 14px;
-  margin: 3px 3px 6px 0px;
+  margin: 0px;
   transition: 0.34s all cubic-bezier(0.19, 1, 0.22, 1);
   text-decoration: none !important;
 }
@@ -270,8 +270,8 @@ table.pvtTable tbody tr td {
   background-color: #fff;
   position: absolute;
   padding: 6px;
-  user-select: none;
   min-height: 100px;
+  user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -282,7 +282,7 @@ table.pvtTable tbody tr td {
   display: block;
   width: 100%;
   color: #2a3f5f;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   padding: 6px;
 }
 

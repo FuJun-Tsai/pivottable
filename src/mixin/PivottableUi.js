@@ -337,7 +337,6 @@ export default {
       this.attrValues = attrValues
     },
     makeDnDCell (items, onChange, classes, h) {
-      console.log(this)
       const scopedSlots = this.$scopedSlots.pvtAttr
       return h(draggable, {
         attrs: {

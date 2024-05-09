@@ -9,11 +9,13 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "echarts": "^5.5.0",
     "jquery": "^3.7.1",
     "jquery-ui-dist": "^1.13.2",
     "pivottable": "^2.23.0",
     "vue": "^3.2.13",
     "vue-draggable-plus": "^0.4.0",
+    "vue-echarts": "^6.7.1",
     "vue-router": "^4.0.3",
     "vuedraggable": "^2.24.3"
   },

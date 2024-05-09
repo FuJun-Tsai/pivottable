@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div id="about">
     <h1>原始資料</h1>
     <table class="data">
       <tr>
@@ -29,7 +29,7 @@
     <h2>pivot-table</h2>
     <div class="pivot-table"></div>
   </div> -->
-  <div>
+  <div style="text-align: center;">
     <h2>pivotUI-table</h2>
     <div class="pivotUI-table" ref="pivotUITable"></div>
   </div>
@@ -106,15 +106,22 @@ onMounted(() => {
 });
 
 </script>
-<style lang="scss" scoped>
-@import 'jquery-ui-dist/jquery-ui.min.css';
-@import 'pivottable/dist/pivot.min.css';
+<style lang="scss">
+// @import 'jquery-ui-dist/jquery-ui.min.css';
+// @import 'pivottable/dist/pivot.min.css';
 
 .data, .pivot-table, .pivotUI-table{
   display: inline-block;
   margin: 0 auto;
 }
 
+#about{
+  text-align: center;
+}
+
+.pvtUiCell, .pvtRendererArea{
+  border: 1px solid #a2b1c6;
+}
 // :deep(.pvtVals), :deep(.pvtRows){
 //   width: 300px;
 // }

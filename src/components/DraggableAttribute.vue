@@ -19,58 +19,60 @@
       >
         ▾
       </span>
-      <div
-      v-if="props.filterOpening"
-      class="pvtFilterBox"
-      style="padding: 4px;"
-      >
-      <!-- @click="moveFilterBoxToTop(props.name)" -->
-        <div class="pvtSearchContainer" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;">
-          <input
-          type="text"
-          class="pvtSearch"
-          placeholder='文字篩選'
-          v-model="filterText"
-          >
-          <button @click="filterText = ''">
-            清除
-          </button>
-        </div>
-        <div style="display: flex; justify-content: center; gap: 4px;">
-          <button class="pvtButton">
-            全選
-          </button>
-          <button class="pvtButton">
-            清空
-          </button>
-        </div>
-        <div class="pvtCheckContainer">
-          <!-- <p
-          v-for="item in (filterText !== '' ? props.attrValues.filter(item => item.includes(filterText)) : props.attrValues)"
-          :key="item"
-          > -->
-          <label
-          v-for="(value, key) in props.option"
-          :key="key"
-          :for="key"
-          style="display: block; width: 100%;"
-          @click.self="valueFilterUpdate(key)"
-          >
-            <input
-            type="checkbox"
-            :id="key"
-            :checked="option[key] === false"
-            @click="valueFilterUpdate(key)"
-            >
-            <span>{{ key }}</span>
-          </label>
-        </div>
-      </div>
     </span>
+    <div
+    v-if="filterOpening === true"
+    class="pvtFilterBox"
+    style="padding: 4px;"
+    >
+      <div
+      class="pvtSearchContainer"
+      style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;"
+      >
+        <input
+        type="text"
+        class="pvtSearch"
+        placeholder="文字篩選"
+        v-model="filterText"
+        >
+        <button
+        class="pvtButton"
+        style="flex: 0 0 42px;"
+        @click="filterText = ''"
+        >
+          清除
+        </button>
+      </div>
+      <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;">
+        <button class="pvtButton">
+          全選
+        </button>
+        <button class="pvtButton">
+          清空
+        </button>
+      </div>
+      <div class="pvtCheckContainer">
+        <label
+        v-for="(value, key) in option"
+        :key="key"
+        :for="key"
+        style="display: block; width: 100%;"
+        @click.self="valueFilterUpdate(key)"
+        >
+          <input
+          type="checkbox"
+          :id="key"
+          :checked="value === false"
+          @click="valueFilterUpdate(key)"
+          >
+          <span>{{ key }}</span>
+        </label>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
-import { defineProps, defineEmits, computed, ref, watch } from 'vue';
+import { defineProps, defineEmits, computed, ref } from 'vue';
 
 const props = defineProps({
   sortable: {
@@ -134,6 +136,17 @@ const props = defineProps({
 const emits = defineEmits(['filterToggle', 'valueFilterUpdate']);
 
 const filterText = ref('');
+const option = computed(()=>{
+  let result = JSON.parse(JSON.stringify(props.option));
+  if(filterText.value){
+    Object.keys(props.option).forEach((item) => {
+      if(item.includes(filterText.value) === false){
+        delete result[item];
+      }
+    });
+  }
+  return result;
+});
 
 const disabled = computed(()=>{
   return !props.sortable && !props.draggable;
@@ -149,7 +162,6 @@ const toggleFilterBox = function(e){
     isOpen: !props.filterOpening
   }
   emits('filterToggle', obj);
-  e.stopPropagation()
   if (!props.attrValues) {
     // if (props.$attrs['no:filterbox']) {
       // emits('no:filterbox')

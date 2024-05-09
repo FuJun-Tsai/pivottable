@@ -5,12 +5,12 @@
   v-model="selected"
   >
     <option
-    v-for="option in props.values"
+    v-for="(option, key) in props.values"
     :key="option"
     :value="option"
     :selected="option === props.value"
     >
-      {{ props.locale[option] }}
+      {{ key }}
     </option>
   </select>
 </template>
@@ -24,9 +24,6 @@ const props = defineProps({
   value: {
     type: String
   },
-  locale: {
-    type: Object
-  }
 });
 
 const selected = ref(props.value);
