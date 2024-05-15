@@ -14,8 +14,15 @@ import '@/mixin/vue-pivottable.css';
 // EChart
 import ECharts from "vue-echarts";
 
+// Naive UI
+import naive from "naive-ui";
+
+import "bootstrap";
+import "bootstrap/scss/bootstrap.scss";
+
 let app = createApp(App);
 app.use(jquery);
 app.use(router);
+app.use(naive);
 app.component("v-chart", ECharts);
 app.mount('#app');

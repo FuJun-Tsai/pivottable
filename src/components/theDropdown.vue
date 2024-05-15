@@ -19,7 +19,7 @@ import { defineProps, defineEmits, ref } from 'vue';
 
 const props = defineProps({
   values: {
-    type: Array
+    type: Object
   },
   value: {
     type: String

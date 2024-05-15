@@ -1,4 +1,7 @@
 <template>
+  <div></div>
+  <div></div>
+  <div></div>
   <table class="pvtUi">
     <tbody>
       <tr>
@@ -21,7 +24,7 @@
         class="pvtAxisContainer pvtUnused pvtHorizList"
         @click.self="filterAllClose"
         >
-          <p>欄位</p>
+          <p class="text-center mb-0">欄位</p>
           <VueDraggable
           style="display: flex; justify-content: center; gap: 4px;"
           v-model="titles"
@@ -50,7 +53,7 @@
         @click.self="filterAllClose"
         >
           <!-- aggregatorName -->
-          <p>統計方式</p>
+          <p class="text-center mb-0">統計方式</p>
           <theDropdown
           style="margin-bottom: 8px;"
           :values="props.aggregatorlocale"
@@ -59,7 +62,7 @@
           >
           </theDropdown>
 
-          <p>統計值</p>
+          <p class="text-center mb-0">統計值</p>
           <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
             <span v-if="aggregatorName === 'Sum over Sum'">分子</span>
             <theDropdown
@@ -86,7 +89,7 @@
         class="pvtAxisContainer pvtHorizList pvtCols"
         @click.self="filterAllClose"
         >
-          <p>欄標籤</p>
+          <p class="text-center mb-0">欄標籤</p>
           <VueDraggable
           style="display: flex; justify-content: center; gap: 4px;"
           v-model="cols"
@@ -113,9 +116,10 @@
         class="pvtAxisContainer pvtVertList pvtRows"
         @click.self="filterAllClose"
         >
-          <p>列標籤</p>
+          <p class="text-center mb-0">列標籤</p>
           <VueDraggable
-          style="display: flex; flex-direction: column; justify-content: center; align-items:center; gap: 4px;"
+          class="d-flex flex-column align-items-center"
+          style="min-height: 200px;"
           v-model="rows"
           group="keys"
           handle=".pvtAttr"
@@ -363,6 +367,6 @@ const treeDataExport = function(val){
 </script>
 <style>
 .pvtUi{
-  margin: 0 auto;
+  margin: 0 auto 12px auto;
 }
 </style>

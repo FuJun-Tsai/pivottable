@@ -28,8 +28,7 @@ nav {
   }
 }
 
-h2, p{
-  text-align: center;
-  margin: 0;
+.pointer{
+  cursor: pointer;
 }
 </style>

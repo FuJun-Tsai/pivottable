@@ -103,12 +103,12 @@
       </tr>
     </tbody>
   </table>
-  <p style="padding: 12px;" v-if="props.aggregatorName !== 'List Unique Values'">
+  <!-- <p class="text-center" style="padding: 12px;" v-if="props.aggregatorName !== 'List Unique Values'">
     <span class="exportBtn" @click="treeDataExport">輸出圖表</span>
-  </p>
+  </p> -->
 </template>
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { defineProps, defineEmits, computed, watchEffect } from 'vue';
 import { PivotData } from '@/helper/utils';
 import { aggregators } from './../helper/utils';
 
@@ -267,9 +267,6 @@ const pivotData = computed(()=>{
 });
 
 const treeData = computed(()=>pivotData.value && pivotData.value.tree);
-const treeDataExport = function(){
-  emits('treeDataExport', treeData.value);
-};
 
 const spanSize = function(arr, i, j){
   // helper function for setting row/col-span in pivotTableRenderer
@@ -318,6 +315,9 @@ let rowTotalColors = () => { }
 // eslint-disable-next-line no-unused-vars
 let colTotalColors = () => { }
 
+watchEffect(()=>{
+  emits('treeDataExport', treeData.value);
+});
 </script>
 <style lang="scss">
 @import '@/mixin/vue-pivottable.css';

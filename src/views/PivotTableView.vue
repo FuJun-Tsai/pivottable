@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>thePivottable</h2>
+    <h2 class="text-center">thePivottable</h2>
     <thePivottable
     :title="pivotTitle"
     :data="pivotData"
