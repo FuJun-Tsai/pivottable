@@ -14,6 +14,7 @@
     "echarts": "^5.5.0",
     "jquery": "^3.7.1",
     "jquery-ui-dist": "^1.13.2",
+    "pinia": "^2.1.7",
     "pivottable": "^2.23.0",
     "vue": "^3.2.13",
     "vue-draggable-plus": "^0.4.0",

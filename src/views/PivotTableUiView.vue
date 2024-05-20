@@ -26,67 +26,76 @@
     <div style="flex: 0 0 200px;">
       <p class="mb-0">圖表類型</p>
       <theDropdown
-      style="margin-bottom: 8px;"
+      class="mb-2"
       :values="chartTypeOption"
       :value="chartType"
       @handleChange="chartTypeSelect"
       />
-      <p class="mb-0">圖表軸</p>
-      <div style="margin-bottom: 8px;">
-        <n-radio-group
-        v-model:value="chartAxisDirection"
-        name="radiogroup"
-        >
-          <n-space>
-            <n-radio
-            v-for="option in chartAxisDirectionOption"
-            :key="option.value"
-            :value="option.value"
-            >
-              {{ option.label }}
-            </n-radio>
-          </n-space>
-        </n-radio-group>
-      </div>
-      <p class="mb-0">線條彎曲</p>
-      <n-slider
-      style="margin-bottom: 8px;"
-      v-model:value="chartLineSmooth"
-      :step="0.1"
-      :max="1"
-      :min="0"
-      />
-      <p class="mb-0">圖標樣式</p>
-      <theDropdown
-      style="margin-bottom: 8px;"
-      :values="chartLineSymbolOption"
-      :value="chartLineSymbol"
-      @handleChange="chartLineSymbolSelect"
-      />
-      <p class="mb-0">圖標大小</p>
-      <n-input-number
-      style="margin-bottom: 8px;"
-      v-model:value="chartLineSymbolSize"
-      />
-      <p class="mb-0">圓角幅度</p>
-      <n-input-number
-      style="margin-bottom: 8px;"
-      v-model:value="chartRadius"
-      />
-      <p class="mb-0">指定圓角</p>
-      <div>
-        <n-radio-group
-        v-model:value="chartRadiusAngle"
-        name="radiogroup"
-        >
-          <n-space>
-            <n-radio
-            v-for="option in chartRadiusAngleOption" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </n-radio>
-          </n-space>
-        </n-radio-group>
-      </div>
+      <!-- 長條、折線 -->
+      <template v-if="['line', 'bar'].includes(chartType)">
+        <p class="mb-0">圖表軸</p>
+        <div style="margin-bottom: 8px;">
+          <n-radio-group
+          v-model:value="chartAxisDirection"
+          name="radiogroup"
+          >
+            <n-space>
+              <n-radio
+              v-for="option in chartAxisDirectionOption"
+              :key="option.value"
+              :value="option.value"
+              >
+                {{ option.label }}
+              </n-radio>
+            </n-space>
+          </n-radio-group>
+        </div>
+      </template>
+      <!-- 折線 -->
+      <template v-if="['line'].includes(chartType)">
+        <p class="mb-0">線條彎曲</p>
+        <n-slider
+        style="margin-bottom: 8px;"
+        v-model:value="chartLineSmooth"
+        :step="0.1"
+        :max="1"
+        :min="0"
+        />
+        <p class="mb-0">圖標樣式</p>
+        <theDropdown
+        style="margin-bottom: 8px;"
+        :values="chartLineSymbolOption"
+        :value="chartLineSymbol"
+        @handleChange="chartLineSymbolSelect"
+        />
+        <p class="mb-0">圖標大小</p>
+        <n-input-number
+        style="margin-bottom: 8px;"
+        v-model:value="chartLineSymbolSize"
+        />
+      </template>
+      <!-- 長條、圓餅 -->
+      <template v-if="['bar', 'pie'].includes(chartType)">
+        <p class="mb-0">圓角幅度</p>
+        <n-input-number
+        style="margin-bottom: 8px;"
+        v-model:value="chartRadius"
+        />
+        <p class="mb-0">指定圓角</p>
+        <div>
+          <n-radio-group
+          v-model:value="chartRadiusAngle"
+          name="radiogroup"
+          >
+            <n-space>
+              <n-radio
+              v-for="option in chartRadiusAngleOption" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </n-radio>
+            </n-space>
+          </n-radio-group>
+        </div>
+      </template>
     </div>
   </div>
   <div class="fix-buttons position-fixed top-50 end-0 translate-middle-y">
@@ -121,7 +130,7 @@
               >
                 <span
                 v-if="pivotTitleTempIndex !== titleIndex"
-                @click="pivotTitleSelect(titleIndex)"
+                @click="pivotTitleSelect(title, titleIndex)"
                 >
                   {{ title }}
                 </span>
@@ -144,7 +153,7 @@
                   </n-button>
                 </div>
               </th>
-              <th>
+              <th class="action">
                 操作
               </th>
             </tr>
@@ -156,7 +165,7 @@
             :key="data"
             >
               <td
-              class="px-2 py-3"
+              class="px-2 py-2"
               style="vertical-align: middle;"
               v-for="item in data"
               :key="`${dataIndex}-${item}`"
@@ -165,7 +174,7 @@
                   {{ item }}
                 </span>
               </td>
-              <td class="px-2 py-3">
+              <td class="px-2 py-2">
                 <n-button
                 quaternary
                 type="warning"
@@ -184,7 +193,7 @@
             </tr>
             <tr class="updateTemp position-sticky bottom-0 bg-white">
               <td
-              class="px-2 py-3"
+              class="px-2 py-2"
               v-for="(item, index) in pivotTitle" :key="item" style="vertical-align: middle;"
               >
                 <n-input
@@ -193,7 +202,7 @@
                 :placeholder="pivotTitle[index]"
                 />
               </td>
-              <td class="px-2 py-3">
+              <td class="px-2 py-2 action">
                 <n-button
                 quaternary
                 type="success"
@@ -232,6 +241,9 @@ import PivottableUi from '@/components/PivottableUi';
 import { PivotUtilities } from '@/mixin/index';
 import theDropdown from '@/components/theDropdown';
 
+// pinia
+// import { pivottableStore } from '@/stores/PivottableUiStore';
+
 // echart
 import { use } from 'echarts/core';
 import {
@@ -261,17 +273,20 @@ use([
 
 provide([THEME_KEY]);
 
+// const usePivottableStore = pivottableStore();
+
 const pivotTitle = ref(['消費日期', '顧客姓名', '商品種類', '顏色', '單品價格', '銷售數量', '銷售總額', '顧客等級', '銷售店鋪', '銷售人員']);
 const pivotTitleTemp = ref('');
 const pivotTitleTempIndex = ref(-1);
-const pivotTitleSelect = function(index){
+const pivotTitleSelect = function(word, index){
+  pivotTitleTemp.value = word;
   pivotTitleTempIndex.value = index;
 };
 const pivotTitleUpdate = function(){
   pivotTitle.value[pivotTitleTempIndex.value] = pivotTitleTemp.value;
   pivotTitleTemp.value = '';
   pivotTitleTempIndex.value = -1;
-}
+};
 
 const pivotData = ref([
   [ '2020/1/1', 'H', '女包1', '紅色', '200', '2', '400', 'VIP',	'台北', 'S12' ],
@@ -463,8 +478,16 @@ const chartAxisType = computed(()=>{
     yAxis: chartAxisExport('y'),
     series: (()=>{
       let result = [];
-      Object.values(chartData.value).forEach((tree, treeIndex) => {
-        Object.entries(tree).forEach((branch)=>{
+      Object.entries(chartData.value)
+      .sort((a, b) => {
+        if(a[0] > b[0]){
+          return 1
+        } else {
+          return -1
+        }
+      })
+      .forEach((tree, treeIndex) => {
+        Object.entries(tree[1]).forEach((branch)=>{
           let branchName = branch[0].split('\x00').join('-');
           if(result.find(item => item.name === branchName)){
             result.find(item => item.name === branchName).data[treeIndex] = branch[1].value();
@@ -494,6 +517,12 @@ const chartAxisType = computed(()=>{
           }
         })
       });
+      result.sort((a, b) => {
+        if(a.name > b.name){
+          return 1;
+        }
+        return -1;
+      })
       return result;
     })()
   }
@@ -552,17 +581,17 @@ const chartPieType = computed(() => {
 const getChartData = function(treeData){
   chartData.value = treeData;
   chartAxis.value = Object.keys(treeData)
-  .map(item => item.split('\x00').join('-'))
-  // .sort((a, b) => {
-  //   if(a > b){
-  //     return 1
-  //   } else {
-  //     return -1
-  //   }
-  // });
+  .sort((a, b)=>{
+    if(a > b){
+      return 1
+    } else {
+      return -1
+    }
+  })
+  .map(item => item.split('\x00').join('-'));
 }
 
-const dialogShowing = ref(true);
+const dialogShowing = ref(false);
 
 </script>
 
@@ -595,7 +624,7 @@ const dialogShowing = ref(true);
     background: #00000099;
     >div{
       display: block;
-      height: 600px;
+      height: 80vh;
       width: 80vw;
       background: #fff;
       border-radius: 4px;
@@ -606,7 +635,7 @@ const dialogShowing = ref(true);
 .dialog{
   table{
     $border-color: #a2b1c6;
-    table-layout: fixed;
+    // table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
     thead{
@@ -622,6 +651,9 @@ const dialogShowing = ref(true);
           &:last-of-type{
             border-right: 1px solid $border-color;
           }
+          &.action{
+            width: 128px;
+          }
         }
       }
     }
@@ -635,7 +667,7 @@ const dialogShowing = ref(true);
           background-color: #ebf0f8;
         }
         td{
-          border-bottom: 1px solid $border-color;
+          border-bottom: 1px solid #dde5f1;
         }
       }
     }
@@ -648,6 +680,9 @@ const dialogShowing = ref(true);
         }
         &:last-of-type{
           border-right: 1px solid $border-color;
+        }
+        &.action{
+          width: 132px;
         }
       }
     }

@@ -17,6 +17,10 @@ import ECharts from "vue-echarts";
 // Naive UI
 import naive from "naive-ui";
 
+// Pinia
+import { createPinia } from 'pinia';
+const pinia = createPinia();
+
 import "bootstrap";
 import "bootstrap/scss/bootstrap.scss";
 
@@ -24,5 +28,6 @@ let app = createApp(App);
 app.use(jquery);
 app.use(router);
 app.use(naive);
+app.use(pinia);
 app.component("v-chart", ECharts);
 app.mount('#app');

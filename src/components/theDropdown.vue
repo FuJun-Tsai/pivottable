@@ -1,21 +1,20 @@
 <template>
   <select
   class="pvtDropdown"
-  @change="handleChange(selected)"
+  @change="handleChange(key)"
   v-model="selected"
   >
     <option
     v-for="(option, key) in props.values"
     :key="option"
     :value="option"
-    :selected="option === props.value"
     >
       {{ key }}
     </option>
   </select>
 </template>
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineProps, defineEmits, ref, watch } from 'vue';
 
 const props = defineProps({
   values: {
@@ -27,10 +26,13 @@ const props = defineProps({
 });
 
 const selected = ref(props.value);
+watch(props, ()=>{
+  selected.value = props.value;
+}, {immediate: true});
 
 const emits = defineEmits(["handleChange"]);
 
-const handleChange = function(selected){
-  emits('handleChange', selected)
+const handleChange = function(val){
+  emits('handleChange', selected.value)
 }
 </script>

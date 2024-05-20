@@ -1,173 +1,166 @@
 <template>
-  <div></div>
-  <div></div>
-  <div></div>
-  <table class="pvtUi">
-    <tbody>
-      <tr>
-        <td
-        class="pvtRenderers"
-        @click.self="filterAllClose"
+  <div
+  class="mx-auto"
+  style="max-width: 1200px;"
+  >
+    <div class="border mb-2 p-2">
+      <p class="text-center mb-0">所有欄位</p>
+      <VueDraggable
+      class="d-flex justify-content-center"
+      style="gap: 4px;"
+      v-model="titles"
+      :group="{name: 'keys', pull: 'clone', put: false}"
+      handle=".pvtAttr"
+      preventOnFilter="false"
+      >
+        <DraggableAttribute
+        v-for="item in props.title"
+        :name="item"
+        :key="item"
+        :option="valueFilter[item]"
+        :filterOpening="filterOpen[item]"
+        :isBtnsPanel="true"
+        @filterToggle="filterToggle"
+        @valueFilterUpdate="valueFilterUpdate"
+        />
+      </VueDraggable>
+    </div>
+    <div
+    class="d-flex"
+    style="gap: 8px;"
+    >
+      <div class="border p-2">
+        <p class="text-center mb-0">列標籤</p>
+        <VueDraggable
+        class="d-flex flex-column align-items-center"
+        style="gap: 4px;"
+        v-model="rows"
+        group="keys"
+        handle=".pvtAttr"
+        preventOnFilter="false"
         >
-          <!-- rendererName -->
-          <template v-if="false">
-            <p>呈現方式</p>
-            <theDropdown
-            :values="Object.keys(rendererOption)"
-            :value="rendererName"
-            @handleChange="rendererSelcet"
-            >
-            </theDropdown>
-          </template>
-        </td>
-        <td
-        class="pvtAxisContainer pvtUnused pvtHorizList"
-        @click.self="filterAllClose"
-        >
-          <p class="text-center mb-0">欄位</p>
-          <VueDraggable
-          style="display: flex; justify-content: center; gap: 4px;"
-          v-model="titles"
-          group="keys"
-          handle=".pvtAttr"
-          preventOnFilter="false"
+          <DraggableAttribute
+          v-for="item in rows"
+          :name="item"
+          :key="item"
+          :option="valueFilter[item]"
+          :filterOpening="filterOpen[item]"
+          :isBtnsPanel="false"
+          @filterToggle="filterToggle"
+          @valueFilterUpdate="valueFilterUpdate"
+          @dragBtnDelete="dragBtnDelete($event, 'rows')"
           >
-          <!-- filter=".pvtAttr" -->
-            <DraggableAttribute
-            v-for="item in titles"
-            :name="item"
-            :key="item"
-            :option="valueFilter[item]"
-            :filterOpening="filterOpen[item]"
-            @filterToggle="filterToggle"
-            @valueFilterUpdate="valueFilterUpdate"
-            >
-              {{ item }}
-            </DraggableAttribute>
-          </VueDraggable>
-        </td>
-      </tr>
-      <tr>
-        <td
-        class="pvtAxisContainer pvtVals"
-        @click.self="filterAllClose"
-        >
-          <!-- aggregatorName -->
-          <p class="text-center mb-0">統計方式</p>
-          <theDropdown
-          style="margin-bottom: 8px;"
-          :values="props.aggregatorlocale"
-          :value="aggregatorName"
-          @handleChange="aggregatorSelect"
-          >
-          </theDropdown>
+            {{ item }}
+          </DraggableAttribute>
+        </VueDraggable>
+      </div>
 
-          <p class="text-center mb-0">統計值</p>
-          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
-            <span v-if="aggregatorName === 'Sum over Sum'">分子</span>
-            <theDropdown
-            v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(aggregatorName) === false"
-            style="margin-bottom: 8px;"
-            :values="titleOption"
-            :value="vals[0]"
-            @handleChange="titleSelect($event, 0)"
-            />
+      <div class="border p-2" style="flex: 1 1 auto">
+        <div class="d-flex mb-3">
+
+          <div style="flex: 1 1 auto">
+            <div class="mb-2">
+              <p class="text-center mb-0">欄標籤</p>
+              <VueDraggable
+              class="d-flex justify-content-center"
+              style="gap: 4px;"
+              v-model="pivottableSetting[pivottableIndex - 1].cols"
+              group="keys"
+              handle=".pvtAttr"
+              preventOnFilter="false"
+              >
+                <DraggableAttribute
+                v-for="item in pivottableSetting[pivottableIndex - 1].cols"
+                :name="item"
+                :key="item"
+                :option="valueFilter[item]"
+                :filterOpening="filterOpen[item]"
+                :isBtnsPanel="false"
+                @filterToggle="filterToggle"
+                @valueFilterUpdate="valueFilterUpdate"
+                @dragBtnDelete="dragBtnDelete($event, 'cols')"
+                >
+                  {{ item }}
+                </DraggableAttribute>
+              </VueDraggable>
+            </div>
+            <div>
+              <TableRenderer
+              :title="props.title"
+              :data="props.data"
+              :rendererName="rendererName"
+              :aggregatorName="pivottableSetting[pivottableIndex - 1].aggregator"
+              :cols="pivottableSetting[pivottableIndex - 1].cols"
+              :rows="rows"
+              :vals="pivottableSetting[pivottableIndex - 1].values"
+              :valueFilter="valueFilter"
+              :filterOpen="props.filterOpen"
+              :rowTotal="props.rowTotal"
+              :colTotal="props.colTotal"
+              :sorters="props.sorters"
+              :locales="props.locales"
+              :locale="props.locale"
+              @treeDataExport="treeDataExport"
+              />
+            </div>
           </div>
 
-          <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
-            <span v-if="aggregatorName === 'Sum over Sum'">分母</span>
+          <div style="flex: 0 0 200px">
+            <p class="text-center mb-0">統計方式</p>
             <theDropdown
-            v-if="aggregatorName === 'Sum over Sum'"
             style="margin-bottom: 8px;"
-            :values="titleOption"
-            :value="vals[1]"
-            @handleChange="titleSelect($event, 1)"
+            :values="props.aggregatorlocale"
+            :value="pivottableAggregator"
+            @handleChange="aggregatorSelect"
             />
+            <p class="text-center mb-0">統計值</p>
+            <div class="d-flex align-items-center flex-nowrap" style="gap: 4px;">
+              <span
+              v-if="pivottableSetting[pivottableIndex - 1].aggregator === 'Sum over Sum'"
+              class="text-nowrap"
+              >
+                分子
+              </span>
+              <theDropdown
+              v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(pivottableSetting[pivottableIndex - 1].aggregator) === false"
+              style="margin-bottom: 8px;"
+              :values="titleOption"
+              :value="pivottableSetting[pivottableIndex - 1].values[0]"
+              @handleChange="titleSelect($event, 0)"
+              />
+            </div>
+
+            <div class="d-flex align-items-center flex-nowrap" style="gap: 4px;">
+              <span
+              v-if="pivottableSetting[pivottableIndex - 1].aggregator === 'Sum over Sum'"
+              class="text-nowrap"
+              >
+                分母
+              </span>
+              <theDropdown
+              v-if="pivottableSetting[pivottableIndex - 1].aggregator === 'Sum over Sum'"
+              style="margin-bottom: 8px;"
+              :values="titleOption"
+              :value="pivottableSetting[pivottableIndex - 1].values[1]"
+              @handleChange="titleSelect($event, 1)"
+              />
+            </div>
           </div>
-        </td>
-        <td
-        class="pvtAxisContainer pvtHorizList pvtCols"
-        @click.self="filterAllClose"
-        >
-          <p class="text-center mb-0">欄標籤</p>
-          <VueDraggable
-          style="display: flex; justify-content: center; gap: 4px;"
-          v-model="cols"
-          group="keys"
-          handle=".pvtAttr"
-          preventOnFilter="false"
-          >
-            <DraggableAttribute
-            v-for="item in cols"
-            :name="item"
-            :key="item"
-            :option="valueFilter[item]"
-            :filterOpening="filterOpen[item]"
-            @filterToggle="filterToggle"
-            @valueFilterUpdate="valueFilterUpdate"
-            >
-              {{ item }}
-            </DraggableAttribute>
-          </VueDraggable>
-        </td>
-      </tr>
-      <tr>
-        <td
-        class="pvtAxisContainer pvtVertList pvtRows"
-        @click.self="filterAllClose"
-        >
-          <p class="text-center mb-0">列標籤</p>
-          <VueDraggable
-          class="d-flex flex-column align-items-center"
-          style="min-height: 200px;"
-          v-model="rows"
-          group="keys"
-          handle=".pvtAttr"
-          preventOnFilter="false"
-          >
-            <DraggableAttribute
-            v-for="item in rows"
-            :name="item"
-            :key="item"
-            :option="valueFilter[item]"
-            :filterOpening="filterOpen[item]"
-            @filterToggle="filterToggle"
-            @valueFilterUpdate="valueFilterUpdate"
-            >
-              {{ item }}
-            </DraggableAttribute>
-          </VueDraggable>
-        </td>
-        <td
-        style="border: 1px solid #a2b1c6; padding: 8px;"
-        @click.self="filterAllClose"
-        >
-          <TableRenderer
-          :title="props.title"
-          :data="props.data"
-          :rendererName="rendererName"
-          :aggregatorName="aggregatorName"
-          :cols="props.cols"
-          :rows="props.rows"
-          :vals="props.vals"
-          :valueFilter="valueFilter"
-          :filterOpen="props.filterOpen"
-          :rowTotal="props.rowTotal"
-          :colTotal="props.colTotal"
-          :sorters="props.sorters"
-          :locales="props.locales"
-          :locale="props.locale"
-          @treeDataExport="treeDataExport"
-          >
-          </TableRenderer>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+        </div>
+        <n-pagination
+        class="justify-content-center"
+        v-model:page="pivottableIndex"
+        :page-count="pivottableSetting.length"
+        />
+      </div>
+
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineProps, defineEmits, ref, computed } from 'vue';
 import theDropdown from './theDropdown.vue';
 import TableRenderer from './TableRenderer.vue';
 import DraggableAttribute from './DraggableAttribute.vue';
@@ -289,22 +282,34 @@ const props = defineProps({
 });
 const emits = defineEmits(['treeDataExport']);
 
+
 const titleOption = props.title.reduce((obj, item) => {
   obj[item] = item;
   return obj;
 }, {});
 const titleSelect = function(title, index){
-  vals.value[index] = title;
+  pivottableSetting.value[pivottableIndex.value - 1].values[index] = title;
 }
 
-const titles = ref([]);
-titles.value = props.title.filter(item => [...props.cols, ...props.rows].includes(item) === false);
-const cols = ref(props.cols);
+const titles = ref(props.title);
 const rows = ref(props.rows);
-const vals = ref(props.vals);
+
+const pivottableIndex = ref(1);
+const pivottableSetting = ref([
+  {
+    cols: ['商品種類'],
+    values: ['銷售總額', '消費日期'],
+    aggregator: 'Sum over Sum',
+  },
+  {
+    cols: ['消費日期'],
+    values: ['銷售總額'],
+    aggregator: 'Count',
+  },
+]);
+const pivottableAggregator = computed(() => pivottableSetting.value[pivottableIndex.value - 1].aggregator)
 
 const filterOpen = ref({});
-filterOpen.value = {};
 filterOpen.value = props.title.reduce((obj, title) => {
   obj[title] = false;
   return obj
@@ -327,7 +332,7 @@ valueFilter.value = props.title.reduce((titleObj, title, titleIndex) => {
   return titleObj;
 }, {});
 const valueFilterUpdate = function(obj){
-  valueFilter.value[obj.title][obj.key] = !valueFilter.value[obj.title][obj.key];
+  valueFilter.value[obj.title] = obj.valueFilter;
 }
 
 const rendererOption = ref({
@@ -350,23 +355,27 @@ const rendererOption = ref({
 
 const rendererName = ref(props.rendererName);
 
-const aggregatorName = ref(props.aggregatorName);
-
 const rendererSelcet = function(val){
   rendererName.value = val;
 }
 
 const aggregatorSelect = function(val){
-  aggregatorName.value = val;
-}
+  pivottableSetting.value[pivottableIndex.value - 1].aggregator = val;
+  // aggregatorName.value = val;
+};
 
 const treeDataExport = function(val){
   emits('treeDataExport', val);
 }
 
-</script>
-<style>
-.pvtUi{
-  margin: 0 auto 12px auto;
+const dragBtnDelete = function(name, position){
+  if(position === 'rows'){
+    rows.value = rows.value.filter(item => item !== name);
+  } else {
+    pivottableSetting.value[pivottableIndex.value - 1].cols = pivottableSetting.value[pivottableIndex.value - 1].cols.filter(item => item !== name);
+  }
 }
+</script>
+
+<style>
 </style>

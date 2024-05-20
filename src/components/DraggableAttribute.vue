@@ -1,5 +1,6 @@
 <template>
   <div
+  class="drag-btn position-relative"
   :data-id="disabled === false ? props.name : null"
   >
     <span
@@ -15,8 +16,9 @@
       </span>
       <span
       class="pvtTriangle"
-      @click="toggleFilterBox($event)"
+      @click="filterOpening = !filterOpening"
       >
+      <!-- @click="toggleFilterBox($event)" -->
         ▾
       </span>
     </span>
@@ -43,37 +45,42 @@
           清除
         </button>
       </div>
+      <div
+      class="pvtCheckContainer d-flex flex-column mb-2 pb-2"
+      style="gap: 2px;"
+      >
+        <template
+        v-for="(value, key) in option"
+        :key="key">
+          <n-checkbox
+          v-if="optionShowing(key)"
+          class="w-100"
+          :label="key"
+          :checked="option[key] === false"
+          @update:checked="option[key] = !option[key]"
+          />
+        </template>
+      </div>
       <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;">
-        <button class="pvtButton">
+        <button class="pvtButton" @click="optionAllSelect">
           全選
         </button>
-        <button class="pvtButton">
+        <button class="pvtButton" @click="optionAllCancel">
           清空
         </button>
       </div>
-      <div class="pvtCheckContainer">
-        <label
-        v-for="(value, key) in option"
-        :key="key"
-        :for="key"
-        style="display: block; width: 100%;"
-        @click.self="valueFilterUpdate(key)"
-        >
-          <input
-          type="checkbox"
-          :id="key"
-          :checked="value === false"
-          @click="valueFilterUpdate(key)"
-          >
-          <span>{{ key }}</span>
-        </label>
-      </div>
+    </div>
+    <div
+    v-if="props.isBtnsPanel === false"
+    class="del position-absolute top-0 end-0 justify-content-center align-items-center pointer"
+    @click="dragBtnDelete"
+    >
+      <img src="@/assets/trash.png" alt="">
     </div>
   </div>
 </template>
 <script setup>
-import { defineProps, defineEmits, computed, ref } from 'vue';
-
+import { defineProps, defineEmits, computed, ref, watch } from 'vue';
 const props = defineProps({
   sortable: {
     type: Boolean,
@@ -131,22 +138,43 @@ const props = defineProps({
   },
   filterOpening: {
     type: Boolean
+  },
+  isBtnsPanel: {
+    default: false,
   }
 });
-const emits = defineEmits(['filterToggle', 'valueFilterUpdate']);
+const emits = defineEmits(['filterToggle', 'valueFilterUpdate', 'dragBtnDelete']);
 
 const filterText = ref('');
-const option = computed(()=>{
-  let result = JSON.parse(JSON.stringify(props.option));
-  if(filterText.value){
-    Object.keys(props.option).forEach((item) => {
-      if(item.includes(filterText.value) === false){
-        delete result[item];
-      }
-    });
+const option = ref(JSON.parse(JSON.stringify(props.option)));
+watch(option, ()=>{
+  let obj = {
+    title: props.name,
+    valueFilter: option.value
   }
-  return result;
-});
+  emits('valueFilterUpdate', obj);
+}, { deep: true });
+
+const filterOpening = ref(false);
+
+const optionShowing = function(option){
+  if(filterText.value && option.search(filterText.value) === -1){
+    return false;
+  }
+  return true;
+};
+const optionAllSelect = function(){
+  option.value = Object.keys(option.value).reduce((obj, option) => {
+    obj[option] = false;
+    return obj;
+  }, {});
+}
+const optionAllCancel = function(){
+  option.value = Object.keys(option.value).reduce((obj, option) => {
+    obj[option] = true;
+    return obj;
+  }, {});
+}
 
 const disabled = computed(()=>{
   return !props.sortable && !props.draggable;
@@ -162,34 +190,51 @@ const toggleFilterBox = function(e){
     isOpen: !props.filterOpening
   }
   emits('filterToggle', obj);
-  if (!props.attrValues) {
-    // if (props.$attrs['no:filterbox']) {
-      // emits('no:filterbox')
-    // }
-    return
-  }
-  // openFilterBox(props.name, !props.open)
-  // moveFilterBoxToTop(props.name)
 };
 
-const valueFilterUpdate = function(key){
-  let obj = {
-    title: props.name,
-    key: key
-  }
-  emits('valueFilterUpdate', obj);
+const dragBtnDelete = function(){
+  emits('dragBtnDelete', props.name);
 }
-
-
-// const openFilterBox = function(attribute, open){
-//   emits('no:filterbox', {attribute, open})
-// }
-
-// const moveFilterBoxToTop = function(attribute) {
-//   emits('moveToTop:filterbox', { attribute })
-// }
 
 </script>
 <style lang="scss">
 @import '@/mixin/vue-pivottable.css';
+.pvtAttr{
+  display: inline-block;
+  background: #f3f6fa;
+  border: 2px dashed #c8d4e3;
+  padding: 4px 8px;
+  white-space: nowrap;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.pvtCheckContainer {
+  text-align: left;
+  white-space: nowrap;
+  overflow-y: auto;
+  width: 100%;
+  max-height: 30vh;
+  border-bottom: 1px solid #dfe8f3;
+}
+
+.drag-btn{
+  &:hover .del{
+    display: flex;
+  }
+  .del{
+    display: none;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    transform: translate(50%, -50%);
+    background: red;
+    color: white;
+    z-index: 1;
+    img{
+      width: 8px;
+    }
+  }
+}
 </style>

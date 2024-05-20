@@ -262,7 +262,6 @@ const pivotData = computed(()=>{
   let obj = JSON.parse(JSON.stringify(props));
   obj.data = [obj.title, ...obj.data];
   obj.aggregators = aggregators;
-
   return new PivotData(obj);
 });
 

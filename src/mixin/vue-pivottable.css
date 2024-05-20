@@ -283,7 +283,7 @@ table.pvtTable tbody tr td {
   width: 100%;
   color: #2a3f5f;
   margin-bottom: 0px;
-  padding: 6px;
+  padding: 3px 6px;
 }
 
 .pvtFilterBox {
@@ -294,10 +294,10 @@ table.pvtTable tbody tr td {
   text-align: left;
   font-size: 14px;
   white-space: nowrap;
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 100%;
   max-height: 30vh;
-  border-top: 1px solid #dfe8f3;
+  border-bottom: 1px solid #dfe8f3;
 }
 
 .pvtCheckContainer p {
