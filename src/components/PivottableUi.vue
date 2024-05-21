@@ -63,7 +63,7 @@
               <p class="text-center mb-0">欄標籤</p>
               <VueDraggable
               class="d-flex justify-content-center"
-              style="gap: 4px;"
+              style="gap: 4px; min-height: 36px;"
               v-model="pivottableSetting[pivottableIndex - 1].cols"
               group="keys"
               handle=".pvtAttr"
@@ -86,13 +86,17 @@
             </div>
             <div>
               <TableRenderer
+              v-for="index in pivottableSetting.length"
+              v-show="index === pivottableIndex"
+              :key="index"
+
               :title="props.title"
               :data="props.data"
               :rendererName="rendererName"
-              :aggregatorName="pivottableSetting[pivottableIndex - 1].aggregator"
-              :cols="pivottableSetting[pivottableIndex - 1].cols"
+              :aggregatorName="pivottableSetting[index - 1].aggregator"
+              :cols="pivottableSetting[index - 1].cols"
               :rows="rows"
-              :vals="pivottableSetting[pivottableIndex - 1].values"
+              :vals="pivottableSetting[index - 1].values"
               :valueFilter="valueFilter"
               :filterOpen="props.filterOpen"
               :rowTotal="props.rowTotal"
@@ -100,7 +104,7 @@
               :sorters="props.sorters"
               :locales="props.locales"
               :locale="props.locale"
-              @treeDataExport="treeDataExport"
+              @treeDataExport="treeDataExport($event, index - 1)"
               />
             </div>
           </div>
@@ -178,13 +182,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  cols: {
-    type: Array,
-  },
   rows: {
     type: Array,
   },
-  vals: {
+  pivotSetting: {
     type: Array,
   },
   rowTotal: {
@@ -295,18 +296,7 @@ const titles = ref(props.title);
 const rows = ref(props.rows);
 
 const pivottableIndex = ref(1);
-const pivottableSetting = ref([
-  {
-    cols: ['商品種類'],
-    values: ['銷售總額', '消費日期'],
-    aggregator: 'Sum over Sum',
-  },
-  {
-    cols: ['消費日期'],
-    values: ['銷售總額'],
-    aggregator: 'Count',
-  },
-]);
+const pivottableSetting = ref(props.pivotSetting);
 const pivottableAggregator = computed(() => pivottableSetting.value[pivottableIndex.value - 1].aggregator)
 
 const filterOpen = ref({});
@@ -364,8 +354,12 @@ const aggregatorSelect = function(val){
   // aggregatorName.value = val;
 };
 
-const treeDataExport = function(val){
-  emits('treeDataExport', val);
+const treeDataExport = function(val, valIndex){
+  let obj = {
+    index: valIndex,
+    value: val,
+  }
+  emits('treeDataExport', obj);
 }
 
 const dragBtnDelete = function(name, position){

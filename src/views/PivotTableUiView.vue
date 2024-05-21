@@ -1,21 +1,24 @@
 <template>
   <h2 class="text-center" style="margin: 0px;">thePivottableUI</h2>
   <PivottableUi
+  class="mb-3"
   :title="pivotTitle"
   :data="pivotData"
+  :rows="pivotRows"
+  :pivotSetting="pivotSetting"
   :rendererName="pivotRendererName"
   :aggregatorName="pivotAggregatorName"
   :aggregatorlocale="aggregatorlocale"
-  :cols="pivotCols"
-  :rows="pivotRows"
-  :vals="pivotValues"
   :sorters="sorters"
   :locales="locales"
   :locale="'tw'"
   @treeDataExport="getChartData"
   >
   </PivottableUi>
-  <div style="display: flex; max-width: 1000px; width: 100%; margin: 0 auto;">
+  <div
+  class="d-flex w-100 mx-auto"
+  style="max-width: 1200px;"
+  >
     <div style="min-height: 400px; height: 400px; flex: auto">
       <v-chart
       :option="chart"
@@ -24,38 +27,43 @@
       />
     </div>
     <div style="flex: 0 0 200px;">
+      <!-- 長條、折線 -->
+      <p class="mb-0">圖表軸</p>
+      <div class="mb-3">
+        <n-radio-group
+        v-model:value="chartAxisDirection"
+        name="radiogroup"
+        >
+          <n-space>
+            <n-radio
+            v-for="option in chartAxisDirectionOption"
+            :key="option.value"
+            :value="option.value"
+            >
+              {{ option.label }}
+            </n-radio>
+          </n-space>
+        </n-radio-group>
+      </div>
+      <p class="mb-0">資料選取</p>
+      <n-space vertical class="mb-3">
+        <n-select
+        :options="chartSettingOption"
+        v-model:value="chartSettingSelected"
+        />
+      </n-space>
       <p class="mb-0">圖表類型</p>
       <theDropdown
-      class="mb-2"
+      class="mb-3"
       :values="chartTypeOption"
       :value="chartType"
       @handleChange="chartTypeSelect"
       />
-      <!-- 長條、折線 -->
-      <template v-if="['line', 'bar'].includes(chartType)">
-        <p class="mb-0">圖表軸</p>
-        <div style="margin-bottom: 8px;">
-          <n-radio-group
-          v-model:value="chartAxisDirection"
-          name="radiogroup"
-          >
-            <n-space>
-              <n-radio
-              v-for="option in chartAxisDirectionOption"
-              :key="option.value"
-              :value="option.value"
-              >
-                {{ option.label }}
-              </n-radio>
-            </n-space>
-          </n-radio-group>
-        </div>
-      </template>
       <!-- 折線 -->
       <template v-if="['line'].includes(chartType)">
         <p class="mb-0">線條彎曲</p>
         <n-slider
-        style="margin-bottom: 8px;"
+        class="mb-3"
         v-model:value="chartLineSmooth"
         :step="0.1"
         :max="1"
@@ -63,14 +71,14 @@
         />
         <p class="mb-0">圖標樣式</p>
         <theDropdown
-        style="margin-bottom: 8px;"
+        class="mb-3"
         :values="chartLineSymbolOption"
         :value="chartLineSymbol"
         @handleChange="chartLineSymbolSelect"
         />
         <p class="mb-0">圖標大小</p>
         <n-input-number
-        style="margin-bottom: 8px;"
+        class="mb-3"
         v-model:value="chartLineSymbolSize"
         />
       </template>
@@ -78,23 +86,22 @@
       <template v-if="['bar', 'pie'].includes(chartType)">
         <p class="mb-0">圓角幅度</p>
         <n-input-number
-        style="margin-bottom: 8px;"
+        class="mb-3"
         v-model:value="chartRadius"
         />
         <p class="mb-0">指定圓角</p>
-        <div>
-          <n-radio-group
-          v-model:value="chartRadiusAngle"
-          name="radiogroup"
-          >
-            <n-space>
-              <n-radio
-              v-for="option in chartRadiusAngleOption" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </n-radio>
-            </n-space>
-          </n-radio-group>
-        </div>
+        <n-radio-group
+        class="mb-3"
+        v-model:value="chartRadiusAngle"
+        name="radiogroup"
+        >
+          <n-space>
+            <n-radio
+            v-for="option in chartRadiusAngleOption" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </n-radio>
+          </n-space>
+        </n-radio-group>
       </template>
     </div>
   </div>
@@ -274,6 +281,7 @@ use([
 provide([THEME_KEY]);
 
 // const usePivottableStore = pivottableStore();
+const testData = ref([]);
 
 const pivotTitle = ref(['消費日期', '顧客姓名', '商品種類', '顏色', '單品價格', '銷售數量', '銷售總額', '顧客等級', '銷售店鋪', '銷售人員']);
 const pivotTitleTemp = ref('');
@@ -332,9 +340,27 @@ const pivotDataUpdate = function(){
   pivotDataTempIndex.value = -1;
 };
 
-const pivotCols = ref(['商品種類']);
 const pivotRows = ref(['顧客等級']);
-const pivotValues = ref(['銷售總額', '消費日期']);
+const pivotSetting = ref([
+  {
+    cols: ['商品種類'],
+    values: ['銷售總額', '消費日期'],
+    aggregator: 'Sum over Sum',
+    chartType: 'bar',
+    valueAxis: {
+      name: 'A'
+    }
+  },
+  {
+    cols: ['消費日期'],
+    values: ['銷售總額'],
+    aggregator: 'Count',
+    chartType: 'line',
+    valueAxis: {
+      name: 'B'
+    }
+  },
+]);
 
 const pivotRendererName = ref('Table');
 const pivotAggregatorName = ref('Sum over Sum');
@@ -386,7 +412,16 @@ const locales = ref({
 });
 
 const chartAxis = ref([]);
-const chartData = ref({});
+const chartData = ref([]);
+const chartSettingOption = computed(()=>{
+  return pivotSetting.value.map((item, index)=>{
+    return {
+      label: index,
+      value: index
+    }
+  });
+});
+const chartSettingSelected = ref(0);
 const chartType = ref('bar');
 const chartTypeOption = ref({
   '長條圖': 'bar',
@@ -395,7 +430,7 @@ const chartTypeOption = ref({
 });
 const chartTypeSelect = function(val){
   chartType.value = val;
-}
+};
 
 const chart = computed(() => {
   if(chartType.value === 'pie'){
@@ -450,15 +485,90 @@ const chartLineSymbolSize = ref(12);
 
 const chartAxisExport = function(axisSide){
   if(chartAxisDirection.value === axisSide){
-    return {
+    return [{
       type: 'category',
-      data: chartAxis.value
-    }
+      data: chartAxisDirection.value === 'x' ? chartAxis.value : [...chartAxis.value].reverse(),
+    }]
   } else {
-    return {
-      type: 'value'
-    }
+    return pivotSetting.value.map((item, index)=>{
+      return {
+        type: 'value',
+        gridIndex: 0,
+        alignTicks: true,
+      }
+    })
   }
+};
+const chartSeriesExport = function(){
+  let result = [];
+  chartData.value.forEach((item, index)=>{
+    Object.entries(item)
+    .sort((a, b) => {
+      if(a[0] > b[0]){
+        return 1
+      } else {
+        return -1
+      }
+    })
+    .forEach((tree, treeIndex) => {
+      Object.entries(tree[1]).forEach((branch, branchIndex)=>{
+        let branchName = branch[0].split('\x00').join('-');
+        if(result.find(item => item.name === branchName)){
+          result.find(item => item.name === branchName).data[treeIndex] = branch[1].value();
+        } else {
+          let data = Object.keys(chartData.value).map(item => null);
+          let obj = {
+            name: branch[0].split('\x00').join('-'),
+            data: data,
+            type: chartType.value,
+            smooth: chartLineSmooth.value,
+            symbol: chartLineSymbol.value,
+            symbolSize: chartLineSymbolSize.value,
+            axisIndex: index,
+            itemStyle: {
+              borderRadius: (()=>{
+                if(chartRadiusAngle.value === 'top'){
+                  if(chartAxisDirection.value === 'x'){
+                    return [chartRadius.value, chartRadius.value, 0, 0];
+                  } else {
+                    return [0, chartRadius.value, chartRadius.value, 0];
+                  }
+                }
+                return chartRadius.value
+              })(),
+            }
+          };
+
+          data[treeIndex] = branch[1].value();
+          result.push(obj);
+        }
+      })
+    });
+  });
+  result.sort((a, b) => {
+    if(a.axisIndex > b.axisIndex){
+      return 1;
+    }
+    if(a.name > b.name){
+      return 1;
+    }
+    return -1;
+  });
+  result = result.map(item => {
+    if(chartAxisDirection.value === 'x'){
+      item.yAxisIndex = item.axisIndex;
+    }
+    if(chartAxisDirection.value === 'y'){
+      item.xAxisIndex = item.axisIndex;
+    }
+
+    if(chartAxisDirection.value === 'y'){
+      item.data.reverse();
+    }
+    delete item.axisIndex;
+    return item;
+  });
+  return result;
 }
 const chartAxisType = computed(()=>{
   return {
@@ -476,58 +586,9 @@ const chartAxisType = computed(()=>{
     },
     xAxis: chartAxisExport('x'),
     yAxis: chartAxisExport('y'),
-    series: (()=>{
-      let result = [];
-      Object.entries(chartData.value)
-      .sort((a, b) => {
-        if(a[0] > b[0]){
-          return 1
-        } else {
-          return -1
-        }
-      })
-      .forEach((tree, treeIndex) => {
-        Object.entries(tree[1]).forEach((branch)=>{
-          let branchName = branch[0].split('\x00').join('-');
-          if(result.find(item => item.name === branchName)){
-            result.find(item => item.name === branchName).data[treeIndex] = branch[1].value();
-          } else {
-            let data = Object.keys(chartData.value).map(item => null);
-            data[treeIndex] = branch[1].value();
-            result.push({
-              name: branch[0].split('\x00').join('-'),
-              data: data,
-              type: chartType.value,
-              smooth: chartLineSmooth.value,
-              symbol: chartLineSymbol.value,
-              symbolSize: chartLineSymbolSize.value,
-              itemStyle: {
-                borderRadius: (()=>{
-                  if(chartRadiusAngle.value === 'top'){
-                    if(chartAxisDirection.value === 'x'){
-                      return [chartRadius.value, chartRadius.value, 0, 0];
-                    } else {
-                      return [0, chartRadius.value, chartRadius.value, 0];
-                    }
-                  }
-                  return chartRadius.value
-                })(),
-              }
-            });
-          }
-        })
-      });
-      result.sort((a, b) => {
-        if(a.name > b.name){
-          return 1;
-        }
-        return -1;
-      })
-      return result;
-    })()
+    series: chartSeriesExport(),
   }
 });
-
 const chartPiePosition = ref([
   {
     center: [['50%', '50%']],
@@ -559,28 +620,31 @@ const chartPieType = computed(() => {
     xAxis: { show: false },
     yAxis: { show: false },
     series: (()=>{
-      return Object.entries(chartData.value).reduce((arr, tree, treeIndex)=>{
-        arr.push({
-          name: tree[0],
-          data: Object.entries(tree[1]).map(item => {
-            return{
-              name: item[0],
-              value: item[1].value()
-            }
-          }),
-          center: chartPiePosition.value[Object.keys(chartData.value).length - 1].center[treeIndex],
-          radius: chartPiePosition.value[Object.keys(chartData.value).length - 1].radius,
-          type: 'pie'
+      let result = [];
+      chartData.value.forEach(item => {
+        Object.entries(item).forEach((tree, treeIndex) => {
+          result.push({
+            name: tree[0],
+            data: Object.entries(tree[1]).map(item => {
+              return{
+                name: item[0],
+                value: item[1].value()
+              }
+            }),
+            center: chartPiePosition.value[Object.keys(chartData.value).length - 1].center[treeIndex],
+            radius: chartPiePosition.value[Object.keys(chartData.value).length - 1].radius,
+            type: 'pie'
+          })
         })
-        return arr;
-      }, []);
+      });
+      return result;
     })()
   }
 });
 
-const getChartData = function(treeData){
-  chartData.value = treeData;
-  chartAxis.value = Object.keys(treeData)
+const getChartData = function(treeDataObj){
+  chartData.value[treeDataObj.index] = treeDataObj.value;
+  chartAxis.value = Object.keys(treeDataObj.value)
   .sort((a, b)=>{
     if(a > b){
       return 1

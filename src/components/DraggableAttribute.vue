@@ -168,13 +168,13 @@ const optionAllSelect = function(){
     obj[option] = false;
     return obj;
   }, {});
-}
+};
 const optionAllCancel = function(){
   option.value = Object.keys(option.value).reduce((obj, option) => {
     obj[option] = true;
     return obj;
   }, {});
-}
+};
 
 const disabled = computed(()=>{
   return !props.sortable && !props.draggable;
@@ -194,7 +194,7 @@ const toggleFilterBox = function(e){
 
 const dragBtnDelete = function(){
   emits('dragBtnDelete', props.name);
-}
+};
 
 </script>
 <style lang="scss">
