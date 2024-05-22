@@ -62,7 +62,7 @@
             <div class="mb-2">
               <p class="text-center mb-0">欄標籤</p>
               <VueDraggable
-              class="d-flex justify-content-center"
+              class="d-flex justify-content-center h-100"
               style="gap: 4px; min-height: 36px;"
               v-model="pivottableSetting[pivottableIndex - 1].cols"
               group="keys"

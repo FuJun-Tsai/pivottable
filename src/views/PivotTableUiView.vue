@@ -1,5 +1,4 @@
 <template>
-  <h2 class="text-center" style="margin: 0px;">thePivottableUI</h2>
   <PivottableUi
   class="mb-3"
   :title="pivotTitle"
@@ -7,12 +6,11 @@
   :rows="pivotRows"
   :pivotSetting="pivotSetting"
   :rendererName="pivotRendererName"
-  :aggregatorName="pivotAggregatorName"
   :aggregatorlocale="aggregatorlocale"
   :sorters="sorters"
   :locales="locales"
   :locale="'tw'"
-  @treeDataExport="getChartData"
+  @treeDataExport="chartDataGet"
   >
   </PivottableUi>
   <div
@@ -53,46 +51,50 @@
         />
       </n-space>
       <p class="mb-0">圖表類型</p>
-      <theDropdown
-      class="mb-3"
-      :values="chartTypeOption"
-      :value="chartType"
-      @handleChange="chartTypeSelect"
-      />
+      <select class="select mb-3" v-model="pivotSetting[chartSettingSelected].chartType">
+        <option
+        v-for="(val, key) in chartTypeOption"
+        :key="val"
+        :value="val">
+          {{ key }}
+        </option>
+      </select>
       <!-- 折線 -->
-      <template v-if="['line'].includes(chartType)">
+      <template v-if="['line'].includes(pivotSetting[chartSettingSelected].chartType)">
         <p class="mb-0">線條彎曲</p>
         <n-slider
         class="mb-3"
-        v-model:value="chartLineSmooth"
+        v-model:value="pivotSetting[chartSettingSelected].chartLineSmooth"
         :step="0.1"
         :max="1"
         :min="0"
         />
         <p class="mb-0">圖標樣式</p>
-        <theDropdown
-        class="mb-3"
-        :values="chartLineSymbolOption"
-        :value="chartLineSymbol"
-        @handleChange="chartLineSymbolSelect"
-        />
+        <select class="select mb-3" v-model="pivotSetting[chartSettingSelected].chartLineSymbol">
+          <option
+          v-for="(val, key) in chartLineSymbolOption"
+          :key="val"
+          :value="val">
+            {{ key }}
+          </option>
+        </select>
         <p class="mb-0">圖標大小</p>
         <n-input-number
         class="mb-3"
-        v-model:value="chartLineSymbolSize"
+        v-model:value="pivotSetting[chartSettingSelected].chartLineSymbolSize"
         />
       </template>
       <!-- 長條、圓餅 -->
-      <template v-if="['bar', 'pie'].includes(chartType)">
+      <template v-if="['bar', 'pie'].includes(pivotSetting[chartSettingSelected].chartType)">
         <p class="mb-0">圓角幅度</p>
         <n-input-number
         class="mb-3"
-        v-model:value="chartRadius"
+        v-model:value="pivotSetting[chartSettingSelected].chartRadius"
         />
         <p class="mb-0">指定圓角</p>
         <n-radio-group
         class="mb-3"
-        v-model:value="chartRadiusAngle"
+        v-model:value="pivotSetting[chartSettingSelected].chartRadiusAngle"
         name="radiogroup"
         >
           <n-space>
@@ -105,6 +107,7 @@
       </template>
     </div>
   </div>
+  <!-- 側邊欄互動 -->
   <div class="fix-buttons position-fixed top-50 end-0 translate-middle-y">
     <div
     class="fix-button pointer p-2"
@@ -113,6 +116,7 @@
       採計資料
     </div>
   </div>
+  <!-- 彈跳窗 -->
   <div
   class="dialog position-fixed top-0 start-0"
   :class="{'open': dialogShowing}"
@@ -248,9 +252,6 @@ import PivottableUi from '@/components/PivottableUi';
 import { PivotUtilities } from '@/mixin/index';
 import theDropdown from '@/components/theDropdown';
 
-// pinia
-// import { pivottableStore } from '@/stores/PivottableUiStore';
-
 // echart
 import { use } from 'echarts/core';
 import {
@@ -280,9 +281,6 @@ use([
 
 provide([THEME_KEY]);
 
-// const usePivottableStore = pivottableStore();
-const testData = ref([]);
-
 const pivotTitle = ref(['消費日期', '顧客姓名', '商品種類', '顏色', '單品價格', '銷售數量', '銷售總額', '顧客等級', '銷售店鋪', '銷售人員']);
 const pivotTitleTemp = ref('');
 const pivotTitleTempIndex = ref(-1);
@@ -292,6 +290,7 @@ const pivotTitleSelect = function(word, index){
 };
 const pivotTitleUpdate = function(){
   pivotTitle.value[pivotTitleTempIndex.value] = pivotTitleTemp.value;
+  console.log(pivotTitle.value);
   pivotTitleTemp.value = '';
   pivotTitleTempIndex.value = -1;
 };
@@ -347,23 +346,24 @@ const pivotSetting = ref([
     values: ['銷售總額', '消費日期'],
     aggregator: 'Sum over Sum',
     chartType: 'bar',
-    valueAxis: {
-      name: 'A'
-    }
+    chartRadius: 4,
+    chartRadiusAngle: 'top',
+    chartLineSmooth: 0.5,
+    chartLineSymbol: 'circle',
+    chartLineSymbolSize: 12,
   },
   {
     cols: ['消費日期'],
     values: ['銷售總額'],
     aggregator: 'Count',
     chartType: 'line',
-    valueAxis: {
-      name: 'B'
-    }
+    chartRadius: 4,
+    chartRadiusAngle: 'top',
+    chartLineSmooth: 0.5,
+    chartLineSymbol: 'circle',
+    chartLineSymbolSize: 12,
   },
 ]);
-
-const pivotRendererName = ref('Table');
-const pivotAggregatorName = ref('Sum over Sum');
 
 const sorters = ref({
   'Day of Week': PivotUtilities.sortAs(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
@@ -413,6 +413,19 @@ const locales = ref({
 
 const chartAxis = ref([]);
 const chartData = ref([]);
+const chartDataGet = function(treeDataObj){
+  chartData.value[treeDataObj.index] = treeDataObj.value;
+  chartAxis.value = Object.keys(treeDataObj.value)
+  .sort((a, b)=>{
+    if(a > b){
+      return 1
+    } else {
+      return -1
+    }
+  })
+  .map(item => item.split('\x00').join('-'));
+};
+
 const chartSettingOption = computed(()=>{
   return pivotSetting.value.map((item, index)=>{
     return {
@@ -422,15 +435,13 @@ const chartSettingOption = computed(()=>{
   });
 });
 const chartSettingSelected = ref(0);
+
 const chartType = ref('bar');
 const chartTypeOption = ref({
   '長條圖': 'bar',
   '折線圖': 'line',
   '圓餅圖': 'pie'
 });
-const chartTypeSelect = function(val){
-  chartType.value = val;
-};
 
 const chart = computed(() => {
   if(chartType.value === 'pie'){
@@ -451,8 +462,6 @@ const chartAxisDirectionOption = ref([
   },
 ]);
 
-const chartRadius = ref(4);
-const chartRadiusAngle = ref('top');
 const chartRadiusAngleOption = ref([
   {
     label: '頂部',
@@ -464,8 +473,6 @@ const chartRadiusAngleOption = ref([
   },
 ]);
 
-const chartLineSmooth = ref(0.5);
-const chartLineSymbol = ref('circle');
 const chartLineSymbolOption = ref({
   '空心圓': 'emptyCircle',
   '圓形': 'circle',
@@ -477,17 +484,13 @@ const chartLineSymbolOption = ref({
   '向上箭頭': 'arrow',
   '無': 'none',
 });
-const chartLineSymbolSelect = function(val){
-  chartLineSymbol.value = val;
-};
-
-const chartLineSymbolSize = ref(12);
 
 const chartAxisExport = function(axisSide){
   if(chartAxisDirection.value === axisSide){
     return [{
       type: 'category',
       data: chartAxisDirection.value === 'x' ? chartAxis.value : [...chartAxis.value].reverse(),
+      axisPointer: { type: 'shadow' }
     }]
   } else {
     return pivotSetting.value.map((item, index)=>{
@@ -499,6 +502,7 @@ const chartAxisExport = function(axisSide){
     })
   }
 };
+
 const chartSeriesExport = function(){
   let result = [];
   chartData.value.forEach((item, index)=>{
@@ -516,25 +520,25 @@ const chartSeriesExport = function(){
         if(result.find(item => item.name === branchName)){
           result.find(item => item.name === branchName).data[treeIndex] = branch[1].value();
         } else {
-          let data = Object.keys(chartData.value).map(item => null);
+          let data = Object.keys(chartData.value[0]).map(() => null);
           let obj = {
             name: branch[0].split('\x00').join('-'),
             data: data,
-            type: chartType.value,
-            smooth: chartLineSmooth.value,
-            symbol: chartLineSymbol.value,
-            symbolSize: chartLineSymbolSize.value,
+            type: pivotSetting.value[index].chartType,
+            smooth: pivotSetting.value[index].chartLineSmooth,
+            symbol: pivotSetting.value[index].chartLineSymbol,
+            symbolSize: pivotSetting.value[index].chartLineSymbolSize,
             axisIndex: index,
             itemStyle: {
               borderRadius: (()=>{
-                if(chartRadiusAngle.value === 'top'){
+                if(pivotSetting.value[index].chartRadiusAngle === 'top'){
                   if(chartAxisDirection.value === 'x'){
-                    return [chartRadius.value, chartRadius.value, 0, 0];
+                    return [pivotSetting.value[index].chartRadius, pivotSetting.value[index].chartRadius, 0, 0];
                   } else {
-                    return [0, chartRadius.value, chartRadius.value, 0];
+                    return [0, pivotSetting.value[index].chartRadius, pivotSetting.value[index].chartRadius, 0];
                   }
                 }
-                return chartRadius.value
+                return pivotSetting.value[index].chartRadius
               })(),
             }
           };
@@ -574,7 +578,9 @@ const chartAxisType = computed(()=>{
   return {
     tooltip: {
       trigger: 'axis',
-      axisPointer: { type: 'shadow' },
+      axisPointer: {
+        type: 'cross',
+      }
     },
     legend: {},
     grid: {
@@ -641,19 +647,6 @@ const chartPieType = computed(() => {
     })()
   }
 });
-
-const getChartData = function(treeDataObj){
-  chartData.value[treeDataObj.index] = treeDataObj.value;
-  chartAxis.value = Object.keys(treeDataObj.value)
-  .sort((a, b)=>{
-    if(a > b){
-      return 1
-    } else {
-      return -1
-    }
-  })
-  .map(item => item.split('\x00').join('-'));
-}
 
 const dialogShowing = ref(false);
 

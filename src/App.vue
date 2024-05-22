@@ -31,4 +31,15 @@ nav {
 .pointer{
   cursor: pointer;
 }
+
+select.select{
+  width: 100%;
+  padding: 8px 4px;
+  font-weight: bold;
+  border: 1px solid #a2b1c6;
+  border-radius: 4px;
+  &:focus-visible{
+    outline: none;
+  }
+}
 </style>
