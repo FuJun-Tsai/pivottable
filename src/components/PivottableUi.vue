@@ -98,7 +98,6 @@
               :rows="rows"
               :vals="pivottableSetting[index - 1].values"
               :valueFilter="valueFilter"
-              :filterOpen="props.filterOpen"
               :rowTotal="props.rowTotal"
               :colTotal="props.colTotal"
               :sorters="props.sorters"

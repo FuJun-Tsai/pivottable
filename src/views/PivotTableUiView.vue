@@ -1,18 +1,186 @@
 <template>
-  <PivottableUi
-  class="mb-3"
-  :title="pivotTitle"
-  :data="pivotData"
-  :rows="pivotRows"
-  :pivotSetting="pivotSetting"
-  :rendererName="pivotRendererName"
-  :aggregatorlocale="aggregatorlocale"
-  :sorters="sorters"
-  :locales="locales"
-  :locale="'tw'"
-  @treeDataExport="chartDataGet"
+  <div
+  class="mx-auto mb-3"
+  style="max-width: 1200px;"
   >
-  </PivottableUi>
+    <div class="border mb-2 p-2">
+      <p class="text-center mb-0">所有欄位</p>
+      <VueDraggable
+      class="d-flex justify-content-center"
+      style="gap: 4px;"
+      v-model="pivotTitle"
+      :group="{name: 'keys', pull: 'clone', put: false}"
+      handle=".pvtAttr"
+      preventOnFilter="false"
+      >
+        <DraggableAttribute
+        v-for="item in pivotTitle"
+        :name="item"
+        :key="item"
+        :option="valueFilter[item]"
+        :isBtnsPanel="true"
+        @filterToggle="filterToggle"
+        @valueFilterUpdate="valueFilterUpdate"
+        />
+      </VueDraggable>
+    </div>
+    <div
+    class="d-flex"
+    style="gap: 8px;"
+    >
+      <div class="border p-2">
+        <p class="text-center mb-0">列標籤</p>
+        <VueDraggable
+        class="d-flex flex-column align-items-center"
+        style="gap: 4px;"
+        v-model="pivotRows"
+        group="keys"
+        handle=".pvtAttr"
+        preventOnFilter="false"
+        >
+          <DraggableAttribute
+          v-for="item in pivotRows"
+          :name="item"
+          :key="item"
+          :option="valueFilter[item]"
+          :isBtnsPanel="false"
+          @filterToggle="filterToggle"
+          @valueFilterUpdate="valueFilterUpdate"
+          @dragBtnDelete="dragBtnDelete($event, 'rows')"
+          >
+            {{ item }}
+          </DraggableAttribute>
+        </VueDraggable>
+      </div>
+
+      <div class="border p-2" style="flex: 1 1 auto">
+        <div class="d-flex mb-3">
+
+          <div style="flex: 1 1 auto">
+            <div class="mb-2">
+              <p class="text-center mb-0">欄標籤</p>
+              <VueDraggable
+              class="d-flex justify-content-center h-100"
+              style="gap: 4px; min-height: 36px;"
+              v-model="pivotSetting[pivottableIndex - 1].cols"
+              group="keys"
+              handle=".pvtAttr"
+              preventOnFilter="false"
+              >
+                <DraggableAttribute
+                v-for="item in pivotSetting[pivottableIndex - 1].cols"
+                :name="item"
+                :key="item"
+                :option="valueFilter[item]"
+                :isBtnsPanel="false"
+                @filterToggle="filterToggle"
+                @valueFilterUpdate="valueFilterUpdate"
+                @dragBtnDelete="dragBtnDelete($event, 'cols')"
+                >
+                  {{ item }}
+                </DraggableAttribute>
+              </VueDraggable>
+            </div>
+            <div>
+              <TableRenderer
+              v-for="index in pivotSetting.length"
+              v-show="index === pivottableIndex"
+              :key="index"
+              :title="pivotTitle"
+              :data="pivotData"
+              :rendererName="rendererName"
+              :aggregatorName="pivotSetting[index - 1].aggregator"
+              :cols="pivotSetting[index - 1].cols"
+              :rows="pivotRows"
+              :vals="pivotSetting[index - 1].values"
+              :valueFilter="valueFilter"
+              :rowTotal="true"
+              :colTotal="true"
+              @treeDataExport="chartDataGet($event, index - 1)"
+              />
+            </div>
+          </div>
+
+          <div style="flex: 0 0 200px">
+            <p class="text-center mb-0">統計方式</p>
+            <select class="select mb-3" v-model="pivotSetting[pivottableIndex - 1].aggregator">
+              <option
+              v-for="(val, key) in aggregatorlocale"
+              :key="val"
+              :value="val">
+                {{ key }}
+              </option>
+            </select>
+            <p class="text-center mb-0">統計值</p>
+            <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
+              <span
+              v-if="pivotSetting[pivottableIndex - 1].aggregator === 'Sum over Sum'"
+              class="text-nowrap"
+              >
+                分子
+              </span>
+              <select
+              v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(pivotSetting[pivottableIndex - 1].aggregator) === false"
+              class="select"
+              v-model="pivotSetting[pivottableIndex - 1].values[0]"
+              >
+                <option
+                v-for="(val) in pivotTitle"
+                :key="val"
+                :value="val">
+                  {{ val }}
+                </option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
+              <span
+              v-if="pivotSetting[pivottableIndex - 1].aggregator === 'Sum over Sum'"
+              class="text-nowrap"
+              >
+                分母
+              </span>
+              <select
+              v-if="pivotSetting[pivottableIndex - 1].aggregator === 'Sum over Sum'"
+              class="select"
+              v-model="pivotSetting[pivottableIndex - 1].values[1]"
+              >
+                <option
+                v-for="(val) in pivotTitle"
+                :key="val"
+                :value="val">
+                  {{ val }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+        <div class="d-flex justify-content-center" style="gap: 4px;">
+          <span>
+            <n-pagination
+            v-model:page="pivottableIndex"
+            :page-count="pivotSetting.length"
+            />
+          </span>
+          <n-button
+          strong secondary type="primary" size="small"
+          @click="pivotSettingAdd"
+          >
+            新增
+          </n-button>
+          <!-- <n-button
+          v-if="pivotSetting.length > 1"
+          strong secondary type="error" size="small"
+          @click="pivotSettingDelete"
+          >
+            移除
+          </n-button> -->
+        </div>
+      </div>
+
+    </div>
+  </div>
   <div
   class="d-flex w-100 mx-auto"
   style="max-width: 1200px;"
@@ -248,9 +416,11 @@
 
 <script setup>
 import { ref, provide, computed, watch } from 'vue';
-import PivottableUi from '@/components/PivottableUi';
+// import PivottableUi from '@/components/PivottableUi';
 import { PivotUtilities } from '@/mixin/index';
-import theDropdown from '@/components/theDropdown';
+import TableRenderer from '@/components/TableRenderer.vue';
+import DraggableAttribute from '@/components/DraggableAttribute.vue';
+import { VueDraggable } from 'vue-draggable-plus';
 
 // echart
 import { use } from 'echarts/core';
@@ -290,7 +460,6 @@ const pivotTitleSelect = function(word, index){
 };
 const pivotTitleUpdate = function(){
   pivotTitle.value[pivotTitleTempIndex.value] = pivotTitleTemp.value;
-  console.log(pivotTitle.value);
   pivotTitleTemp.value = '';
   pivotTitleTempIndex.value = -1;
 };
@@ -364,6 +533,47 @@ const pivotSetting = ref([
     chartLineSymbolSize: 12,
   },
 ]);
+const pivotSettingAdd = function(){
+  pivotSetting.value.push({
+    cols: ['消費日期'],
+    values: ['銷售總額'],
+    aggregator: 'Count',
+    chartType: 'line',
+    chartRadius: 4,
+    chartRadiusAngle: 'top',
+    chartLineSmooth: 0.5,
+    chartLineSymbol: 'circle',
+    chartLineSymbolSize: 12,
+  });
+};
+const pivotSettingDelete = function(){
+  let deleteIndex = pivottableIndex.value - 1;
+  if((pivotSetting.value.length - 1) === deleteIndex){
+    pivottableIndex.value = 1;
+  }
+  pivotSetting.value.splice(deleteIndex, 1);
+}
+const pivottableIndex = ref(1);
+
+const dragBtnDelete = function(name, position){
+  if(position === 'rows'){
+    pivotRows.value = pivotRows.value.filter(item => item !== name);
+  } else {
+    pivotSetting.value[pivottableIndex.value - 1].cols = pivotSetting.value[pivottableIndex.value - 1].cols.filter(item => item !== name);
+  }
+};
+
+const valueFilter = ref({});
+valueFilter.value = pivotTitle.value.reduce((titleObj, title, titleIndex) => {
+  titleObj[title] = pivotData.value.reduce((dataObj, data) => {
+    dataObj[data[titleIndex]] = false;
+    return dataObj;
+  }, {});
+  return titleObj;
+}, {});
+const valueFilterUpdate = function(obj){
+  valueFilter.value[obj.title] = obj.valueFilter;
+}
 
 const sorters = ref({
   'Day of Week': PivotUtilities.sortAs(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
@@ -413,9 +623,9 @@ const locales = ref({
 
 const chartAxis = ref([]);
 const chartData = ref([]);
-const chartDataGet = function(treeDataObj){
-  chartData.value[treeDataObj.index] = treeDataObj.value;
-  chartAxis.value = Object.keys(treeDataObj.value)
+const chartDataGet = function(val, valIndex){
+  chartData.value[valIndex] = val;
+  chartAxis.value = Object.keys(val)
   .sort((a, b)=>{
     if(a > b){
       return 1
@@ -505,6 +715,7 @@ const chartAxisExport = function(axisSide){
 
 const chartSeriesExport = function(){
   let result = [];
+  console.log(chartData.value)
   chartData.value.forEach((item, index)=>{
     Object.entries(item)
     .sort((a, b) => {

@@ -143,7 +143,7 @@ const props = defineProps({
     default: false,
   }
 });
-const emits = defineEmits(['filterToggle', 'valueFilterUpdate', 'dragBtnDelete']);
+const emits = defineEmits(['valueFilterUpdate', 'dragBtnDelete']);
 
 const filterText = ref('');
 const option = ref(JSON.parse(JSON.stringify(props.option)));
@@ -183,14 +183,6 @@ const disabled = computed(()=>{
 const sortonly = computed(()=>{
   return props.sortable && !props.draggable;
 });
-
-const toggleFilterBox = function(e){
-  let obj = {
-    title: props.name,
-    isOpen: !props.filterOpening
-  }
-  emits('filterToggle', obj);
-};
 
 const dragBtnDelete = function(){
   emits('dragBtnDelete', props.name);
