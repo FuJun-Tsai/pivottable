@@ -2,7 +2,8 @@
   <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/pivotTable">pivotTable</router-link> |
-    <router-link to="/pivotTableUi">pivotTableUi</router-link>
+    <router-link to="/pivotTableUi">pivotTableUi</router-link> |
+    <router-link to="/CreatePageView">CreatePageView</router-link>
   </nav>
   <router-view/>
 </template>

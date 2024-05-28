@@ -18,7 +18,6 @@
       class="pvtTriangle"
       @click="filterOpening = !filterOpening"
       >
-      <!-- @click="toggleFilterBox($event)" -->
         ▾
       </span>
     </span>
@@ -188,18 +187,11 @@ const dragBtnDelete = function(){
   emits('dragBtnDelete', props.name);
 };
 
+
 </script>
 <style lang="scss">
 @import '@/mixin/vue-pivottable.css';
-.pvtAttr{
-  display: inline-block;
-  background: #f3f6fa;
-  border: 2px dashed #c8d4e3;
-  padding: 4px 8px;
-  white-space: nowrap;
-  border-radius: 4px;
-  user-select: none;
-}
+@import '@/App.scss';
 
 .pvtCheckContainer {
   text-align: left;

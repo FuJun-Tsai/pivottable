@@ -1,0 +1,160 @@
+@import '../components-scss/rwd.scss';
+
+$blue: (
+    100:#7EC2F3,
+    200:#49A9EE,
+    300:#108EE9,
+    400:#0E77CA,
+    500:#0C60AA,
+    600:#09488A,
+    700:#073069,
+);
+
+$black: (
+    100: #F4F4F3,
+    200: #EAE8E6,
+    300: #D4D1CE,
+    400: #A9A39D,
+    500: #54463B,
+    600: #29180A,
+);
+
+$red: (
+    100: #F7EADF,
+    200: #EED0B7,
+    300: #E8C1A1,
+    400: #C57665,
+    500: #A02927,
+);
+
+$secondary: (
+    'blue-light': #ADD8E6,
+    'blue': #44A7B6,
+    'blue-dark': #13556D,
+
+    'white': #ffffff,
+    'orange': #E56B20,
+    'nude': #E8D0BF,
+    'red': #C95748,
+    'gray': #D9D9D9,
+    'green': #96C95D,
+    'yellow': #F5B041,
+
+    'blue-light-50': #d6ebf2,
+    'orange-50': #f2b58f,
+);
+
+$colors: (
+    'blue': $blue,
+    'black': $black,
+    'red': $red,
+    'secondary': $secondary,
+);
+
+// color-blue-400
+// color-secondary-green
+// background-black-400
+// background-secondary-gray
+// border-red-500
+// border-secondary-orange
+// border-1px
+// border-srart-2px
+
+@each $colorKey, $colorVal in $colors {
+    @each $key, $val in $colorVal {
+        .color-#{$colorKey}-#{$key}{
+            color: $val;
+        }
+        .small-mobile-color-#{$colorKey}-#{$key}{
+            @include small-mobile {
+                color: $val !important;
+            }
+        }
+        .mobile-color-#{$colorKey}-#{$key}{
+            @include mobile {
+                color: $val;
+            }
+        }
+        .pad-color-#{$colorKey}-#{$key}{
+            @include pad {
+                color: $val;
+            }
+        }
+    }
+}
+
+@each $colorKey, $colorVal in $colors {
+    @each $key, $val in $colorVal {
+        .background-#{$colorKey}-#{$key}{
+            background-color: $val !important;
+        }
+    }
+}
+
+@each $colorKey, $colorVal in $colors {
+    @each $key, $val in $colorVal {
+        .border-#{$colorKey}-#{$key}{
+            border-color: $val !important;
+        }
+    }
+}
+
+$border-direction:(
+    start: left,
+    end: right,
+    bottom: bottom,
+);
+@for $borderWidth from 0 through 4 {
+    .border-#{$borderWidth}px {
+        border-width: #{$borderWidth}px;
+        border-style: solid;
+    }
+    .small-mobile-border-#{$borderWidth}px{
+        @include small-mobile {
+            border-width: #{$borderWidth}px !important;
+            border-style: solid !important;
+        }
+    }
+    .mobile-border-#{$borderWidth}px{
+        @include mobile {
+            border-width: #{$borderWidth}px !important;
+            border-style: solid !important;
+        }
+    }
+    .pad-border-#{$borderWidth}px{
+        @include pad {
+            border-width: #{$borderWidth}px !important;
+            border-style: solid !important;
+        }
+    }
+
+    @each $key, $val in $border-direction {
+        .border-#{$key}-#{$borderWidth}px {
+            border-#{$val}-width: #{$borderWidth}px;
+            border-#{$val}-style: solid;
+        }
+        .small-mobile-border-#{$key}-#{$borderWidth}px {
+            @include small-mobile {
+                border-#{$val}-width: #{$borderWidth}px !important;
+                border-#{$val}-style: solid !important;
+            }
+        }
+        .mobile-border-#{$key}-#{$borderWidth}px {
+            @include mobile {
+                border-#{$val}-width: #{$borderWidth}px;
+                border-#{$val}-style: solid;
+            }
+        }
+        .pad-border-#{$key}-#{$borderWidth}px {
+            @include pad {
+                border-#{$val}-width: #{$borderWidth}px;
+                border-#{$val}-style: solid;
+            }
+        }
+    }
+}
+
+// .border-1px
+// .small-mobile-border-start-2px
+// .mobile-border-end-3px
+// .pad-border-end-4px

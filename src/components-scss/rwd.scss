@@ -1,0 +1,81 @@
+// 超連結使用：
+// 解除註解後 ctrl+左鍵點擊
+// @import "../mixin/mixin.js";
+// @import "../custom/bootstrap-ui-custom";
+
+$break-points:(
+  xs: 0,
+  sm: 560,
+  md: 820,
+  lg: 1040,
+  xl: 1400,
+  xxl: 1800
+);
+
+@mixin desktop-all{
+  @media screen and (min-width: #{map-get($break-points, xl) + 'px'}) {
+    @content;
+  }
+}
+
+@mixin large-desktop-all{
+  @media screen and (min-width: #{map-get($break-points, xxl) + 'px'}) {
+    @content;
+  }
+}
+
+// @mixin large-desktop{
+//   @media screen and (max-width: #{map-get($break-points, xxl) + 'px'}) {
+//     @content;
+//   }
+// }
+
+// @mixin small-desktop{
+//   @media screen and (max-width: #{map-get($break-points, xl) + 'px'}) {
+//     @content;
+//   }
+// }
+
+@mixin desktop-only{
+  @media screen and (min-width: #{map-get($break-points, xl) + 'px'}) and (max-width: #{map-get($break-points, xxl) + 'px'}) {
+    @content;
+  }
+}
+
+@mixin pad{
+  @media screen and (max-width: #{map-get($break-points, lg) + 'px'}) {
+    @content;
+  }
+}
+
+@mixin pad-only{
+  @media screen and (min-width: #{map-get($break-points, md) + 'px'}) and (max-width: #{map-get($break-points, lg) - 1 + 'px'}) {
+    @content;
+  }
+}
+
+@mixin mobile{
+  @media screen and (max-width: #{map-get($break-points, md) - 1 + 'px'}) {
+    @content;
+  }
+}
+
+@mixin small-mobile{
+  @media screen and (max-width: #{map-get($break-points, sm) - 1 + 'px'}) {
+    @content;
+  }
+}
+
+// 直立
+@mixin portrait{
+  @media (orientation: portrait) {
+    @content;
+  }
+}
+
+// 橫置
+@mixin landscape{
+  @media (orientation: landscape) {
+    @content;
+  }
+}

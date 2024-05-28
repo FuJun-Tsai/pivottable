@@ -1,0 +1,109 @@
+@import '@/components-scss/color-setting';
+@import '@/components-scss/rwd';
+
+// 參數集
+$frame-paddingY: 16px;
+$frame-paddingX: 16px;
+$title-font-size: 24px;
+$divide: 60;
+
+// 像是js的迴圈 => for(let i = 1; i<60; i+=1)
+@for $i from 1 through $divide {
+  // desktop setting
+  .row-height-#{$i}x {
+    height: calc( #{$i} / #{$divide} * 100% );
+    > div{
+      padding-bottom: 16px;
+      height: calc(100% - 1px);
+      @include pad {
+        height: $i * 9.5px;
+      }
+    }
+    @include pad {
+      height: unset;
+    }
+  }
+}
+
+// 容器
+.frame {
+  padding: $frame-paddingY $frame-paddingX;
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, .1);
+  border-radius: 14px;
+  height: 100%;
+  background-color: #fff;
+  position: relative;
+  z-index: 0;
+  @include pad {
+    box-shadow: unset;
+  }
+  .filter{
+    flex: none;
+    z-index: 1;
+  }
+  .title {
+    cursor: default;
+    position: relative;
+    font-size: $title-font-size !important;
+    line-height: 1;
+    height: $title-font-size;
+    white-space: nowrap;
+    font-weight: bolder;
+    @extend .color-black-600;
+  }
+  .notice{
+    position: absolute;
+    cursor: pointer;
+  }
+  // .title ~ .content , .filter ~ .content{
+  //   height: calc(100% - #{$title-margin-bottom} - #{$title-font-size});
+  // }
+  .content{
+    flex: 1 1 auto;
+    padding: 8px;
+    margin: -8px;
+    position: relative;
+    overflow: auto;
+    &.block-loading{
+      padding: 0px;
+      margin: 0px;
+    }
+  }
+
+  &.frame-scroll{
+    padding: $frame-paddingY calc(#{$frame-paddingX} / 2);
+    .title{
+      padding-left: calc(#{$frame-paddingY} / 2);
+      padding-right: calc(#{$frame-paddingY} / 2);
+    }
+    .block-loading{
+      padding: 0;
+      &.title, &.content{
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+@keyframes loading {
+  to{
+    background-position-x: -20%;
+  }
+}
+.block-loading{
+  background: linear-gradient(
+    100deg,
+    rgba(256, 256, 256, 0) 30%,
+    rgba(256, 256, 256, 0.5) 50%,
+    rgba(256, 256, 256, 0) 30%)
+    #ededed;
+  background-size: 200% 100%;
+  background-position-x: 180%;
+  animation: 2s loading ease-in-out infinite;
+}
+.mt-24{
+  margin-top: 24px;
+}

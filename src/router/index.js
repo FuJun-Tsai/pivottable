@@ -21,6 +21,11 @@ const routes = [
     name: 'pivotTableUi',
     component: () => import('../views/PivotTableUiView.vue')
   },
+  {
+    path: '/CreatePageView',
+    name: 'CreatePageView',
+    component: () => import('../views/CreatePageView.vue')
+  },
 ]
 
 const router = createRouter({
