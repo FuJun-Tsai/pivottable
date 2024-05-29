@@ -1,29 +1,80 @@
 <template>
   <div
-  class="container grid"
+  class="container grid h-100"
   :style="styleReturn(pageSetting[0].view)"
   >
-    <div
+
+    <CommonBlockComponent
     v-for="setting in pageSetting[0].blocks"
     :key="setting.title"
     :style="styleReturn(setting.view, setting)"
+    :isShowTitle="true"
+    :isShowFilter="true"
+    :isShowNotice="false"
+    :isAPIComplete="true"
     >
-      <CommonBlockComponent
-      :isShowTitle="false"
-      :isShowFilter="false"
-      :isShowNotice="false"
-      :isAPIComplete="true"
-      >
-        <template #content>
-          12312312312
-        </template>
-      </CommonBlockComponent>
-    </div>
+      <template #title>
+        {{ setting.title }}
+      </template>
+      <template #filter>
+        <div class="d-flex" style="gap: 4px;">
+          <img
+          class="pointer"
+          src="@/assets/icons8-chart-50.png"
+          alt="圖表設定"
+          @click="isShowChartSetting = true"
+          >
+          <img
+          class="pointer"
+          src="@/assets/icons8-pivot-table-50.png"
+          alt="樞紐分析"
+          @click="isShowPivotTable = true"
+          >
+          <img
+          class="pointer"
+          src="@/assets/icons8-table-50.png"
+          alt="採計資料"
+          @click="isShowDataTable = true"
+          >
+        </div>
+      </template>
+      <template #content>
+        12312312312
+      </template>
+    </CommonBlockComponent>
   </div>
+  <!-- 圖表設定 -->
+  <CommonDialogComponent
+  :isShowDialog="isShowChartSetting"
+  @closeDialog="dialogClose"
+  >
+    <template #body>
+      <h4 class="text-center">圖表設定</h4>
+    </template>
+  </CommonDialogComponent>
+  <!-- 樞紐分析 -->
+  <CommonDialogComponent
+  :isShowDialog="isShowPivotTable"
+  @closeDialog="dialogClose"
+  >
+    <template #body>
+      <h4 class="text-center">樞紐分析</h4>
+    </template>
+  </CommonDialogComponent>
+  <!-- 採計資料 -->
+  <CommonDialogComponent
+  :isShowDialog="isShowDataTable"
+  @closeDialog="dialogClose"
+  >
+    <template #body>
+      <h4 class="text-center">採計資料</h4>
+    </template>
+  </CommonDialogComponent>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import CommonBlockComponent from '@/components/CommonBlockComponent';
+import CommonDialogComponent from '@/components/CommonDialogComponent';
 
 const pageSetting = ref([
   {
@@ -877,6 +928,16 @@ const styleReturn = computed(()=>{
     return result;
   }
 });
+
+const isShowChartSetting = ref(false);
+const isShowPivotTable = ref(false);
+const isShowDataTable = ref(false);
+const dialogClose = function(){
+  isShowPivotTable.value = false;
+  isShowDataTable.value = false;
+  isShowChartSetting.value = false;
+}
+
 </script>
 <style lang="scss">
 .grid{
@@ -885,5 +946,96 @@ const styleReturn = computed(()=>{
   grid-gap: 16px;
   grid-template-rows: repeat(12, 1fr);
   grid-template-columns: repeat(12, 1fr);
+}
+
+img{
+  $img-size: 16px;
+  width: $img-size;
+  height: $img-size;
+}
+
+.dialog-back{
+  table{
+    $border-color: #a2b1c6;
+    // table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    thead{
+      z-index: 1;
+      tr{
+        th{
+          border-top: 1px solid $border-color;
+          border-bottom: 1px solid $border-color;
+          background: #ebf0f8;
+          &:first-of-type{
+            border-left: 1px solid $border-color;
+          }
+          &:last-of-type{
+            border-right: 1px solid $border-color;
+          }
+          &.action{
+            width: 128px;
+          }
+          &:last-of-type{
+            position: relative;
+            &:after{
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: 100%;
+              width: 12px;
+              transform: translate(-100%, 0);
+              box-shadow: inset -16px 0 8px -12px #a6c7fdcc;
+            }
+          }
+        }
+      }
+    }
+    tbody{
+      tr{
+        &.selected td{
+          background-color: #becfe7 !important;
+        }
+        &:not(.selected ,.updateTemp):hover td{
+          background-color: #ebf0f8 !important;
+        }
+        td{
+          transition-duration: .3s;
+          background-color: #fff;
+          border-bottom: 1px solid #dde5f1;
+          &:last-of-type{
+            position: relative;
+            background: white;
+            &:after{
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: 100%;
+              width: 12px;
+              transform: translate(-100%, 0);
+              box-shadow: inset -16px 0 8px -12px rgba(0, 0, 0, .18);;
+            }
+          }
+        }
+      }
+    }
+    .updateTemp{
+      td{
+        border-top: 1px solid $border-color;
+        border-bottom: 1px solid $border-color;
+        &:first-of-type{
+          border-left: 1px solid $border-color;
+        }
+        &:last-of-type{
+          border-right: 1px solid $border-color;
+        }
+        &.action{
+          width: 132px;
+        }
+      }
+    }
+  }
 }
 </style>

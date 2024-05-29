@@ -724,7 +724,6 @@ const chartSettingOption = computed(()=>{
 });
 const chartSettingSelected = ref(0);
 
-const chartType = ref('bar');
 const chartTypeOption = ref({
   '長條圖': 'bar',
   '折線圖': 'line',
@@ -732,9 +731,9 @@ const chartTypeOption = ref({
 });
 
 const chart = computed(() => {
-  if(chartType.value === 'pie'){
-    return chartPieType.value;
-  }
+  // if(chartType.value === 'pie'){
+  //   return chartPieType.value;
+  // }
   return chartAxisType.value;
 });
 
@@ -772,6 +771,12 @@ const chartLineSymbolOption = ref({
   '向上箭頭': 'arrow',
   '無': 'none',
 });
+
+const chartGridBuilding = function(){};
+const chartLegendBuilding = function(){};
+const chartDataZoomBuilding = function(){};
+const chartAxisBuilding = function(){};
+const chartSeriesBuilding = function(){};
 
 const chartAxisExport = function(axisSide){
   if(chartAxisDirection.value === axisSide){
@@ -839,7 +844,7 @@ const chartSeriesExport = function(){
           if(pivotSetting.value[index].chartStackUsing === true){
             pivotSetting.value[index].chartStack.forEach((group, groupIndex) => {
               if(group.includes(branch[0]) === true){
-                obj.stack = `分組${groupIndex + 1}`;
+                obj.stack = `分組${index}${groupIndex + 1}`;
               }
             });
           }
@@ -851,34 +856,34 @@ const chartSeriesExport = function(){
       });
     });
 
-    // 調整排序
-    result = result.map((resultItem, resultIndex) => {
-      if(pivotSetting.value[index].chartStackUsing === true){
-        // 啟用數據分組時，按分組排序
-        resultItem.sort((a, b) => {
-          if(a.stack > b.stack){
-            return 1;
-          } else {
-            return -1;
-          }
-        });
-      } else {
-        // 數據順序同樞紐分析表
-        resultItem.sort((a, b) => {
-          if(a.axisIndex > b.axisIndex){
-            return 1;
-          }
-          if(a.name > b.name){
-            return 1;
-          }
-          return -1;
-        });
-      }
-
-      return resultItem;
-    })
-
   });
+
+  // 調整排序
+  result = result.map((resultItem, resultIndex) => {
+    if(pivotSetting.value[resultIndex].chartStackUsing === true){
+      // 啟用數據分組時，按分組排序
+      resultItem.sort((a, b) => {
+        if(a.stack > b.stack){
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+    } else {
+      // 數據順序同樞紐分析表
+      resultItem.sort((a, b) => {
+        if(a.axisIndex > b.axisIndex){
+          return 1;
+        }
+        if(a.name > b.name){
+          return 1;
+        }
+        return -1;
+      });
+    }
+    console.log(resultItem);
+    return resultItem;
+  })
 
   // 陣列降維
   result = result.flat(1);
@@ -960,13 +965,7 @@ const chartPieType = computed(() => {
       trigger: 'item',
     },
     legend: {},
-    grid: {
-      left: '16px',
-      right: '16px',
-      top: '32px',
-      bottom: '16px',
-      containLabel: true
-    },
+    grid: {},
     xAxis: { show: false },
     yAxis: { show: false },
     series: (()=>{
@@ -993,10 +992,6 @@ const chartPieType = computed(() => {
 });
 
 const dialogShowing = ref(false);
-
-const test = function(word){
-  console.log(word)
-}
 </script>
 
 <style lang="scss">
