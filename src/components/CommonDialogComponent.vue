@@ -1,5 +1,5 @@
 <template>
-  <div class="dialog-back start-0 w-100 h-100 transition"
+  <div class="dialog-back position-fixed start-0 w-100 h-100 transition"
   @click.self="closeDialog"
   :class="{
     'close': props.isShowDialog === false,
@@ -13,9 +13,11 @@
     <div
     class="box-shadow position-absolute overflow-auto background-secondary-white rounded-3 p-3"
     :style="{
-      'width': props.dialogWidth + 'px',
+      // 'width': props.dialogWidth + 'px',
+      // 'height': typeof props.dialogHeight === 'number' ? props.dialogHeight + 'px' : props.dialogHeight,
+      'width': `80%`,
+      'height': `80%`,
       'max-width': 'calc(100% - 32px)',
-      'height': typeof props.dialogHeight === 'number' ? props.dialogHeight + 'px' : props.dialogHeight,
       'max-height': 'calc(100vh - 32px)',
       'top': positionStyleComputed.top,
       'left': positionStyleComputed.left,
@@ -31,9 +33,6 @@
       >
         <path class="transition" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/>
       </svg>
-      <!-- <n-scrollbar :style="scrollbarHeight">
-        <slot name="body"></slot>
-      </n-scrollbar> -->
       <p
       v-if="spacing"
       class="fs-24 fw-bolder color-black-600"
@@ -121,12 +120,9 @@ const closeDialog = function(){
 
 .dialog-back{
   transition-duration: .3s;
-  position: absolute;
-  @include pad{
-    position: fixed;
-  }
 }
 .close{
+  display: none;
   z-index: -1;
   opacity: 0;
   background: #ffffff;

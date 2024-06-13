@@ -734,6 +734,7 @@ const chart = computed(() => {
   // if(chartType.value === 'pie'){
   //   return chartPieType.value;
   // }
+  console.log(chartAxisType.value)
   return chartAxisType.value;
 });
 
@@ -772,11 +773,6 @@ const chartLineSymbolOption = ref({
   '無': 'none',
 });
 
-const chartGridBuilding = function(){};
-const chartLegendBuilding = function(){};
-const chartDataZoomBuilding = function(){};
-const chartAxisBuilding = function(){};
-const chartSeriesBuilding = function(){};
 
 const chartAxisExport = function(axisSide){
   if(chartAxisDirection.value === axisSide){
@@ -881,7 +877,6 @@ const chartSeriesExport = function(){
         return -1;
       });
     }
-    console.log(resultItem);
     return resultItem;
   })
 
@@ -996,7 +991,6 @@ const dialogShowing = ref(false);
 
 <style lang="scss">
 @import '@/App.scss';
-
 .fix-buttons {
   box-shadow: 0px 0px 8px #a2b1c6, 0px 0px 8px #a2b1c6;
   border-radius: 8px 0px 0px 8px;

@@ -218,6 +218,7 @@ const dragBtnDelete = function(){
     z-index: 1;
     img{
       width: 8px;
+      height: 8px;
     }
   }
 }

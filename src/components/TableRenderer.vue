@@ -108,7 +108,7 @@
   </p> -->
 </template>
 <script setup>
-import { defineProps, defineEmits, computed, watchEffect } from 'vue';
+import { defineProps, defineEmits, computed, watch } from 'vue';
 import { PivotData } from '@/helper/utils';
 import { aggregators } from './../helper/utils';
 
@@ -266,6 +266,9 @@ const pivotData = computed(()=>{
 });
 
 const treeData = computed(()=>pivotData.value && pivotData.value.tree);
+watch(treeData, ()=>{
+  emits('treeDataExport', treeData.value);
+}, {immediate: true})
 
 const spanSize = function(arr, i, j){
   // helper function for setting row/col-span in pivotTableRenderer
@@ -314,9 +317,9 @@ let rowTotalColors = () => { }
 // eslint-disable-next-line no-unused-vars
 let colTotalColors = () => { }
 
-watchEffect(()=>{
-  emits('treeDataExport', treeData.value);
-});
+// watchEffect(()=>{
+//   emits('treeDataExport', treeData.value);
+// });
 </script>
 <style lang="scss">
 @import '@/mixin/vue-pivottable.css';
