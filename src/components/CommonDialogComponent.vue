@@ -11,7 +11,7 @@
   }"
   >
     <div
-    class="box-shadow position-absolute overflow-auto background-secondary-white rounded-3 p-3"
+    class="box-shadow position-absolute background-secondary-white rounded-3 p-3"
     :style="{
       // 'width': props.dialogWidth + 'px',
       // 'height': typeof props.dialogHeight === 'number' ? props.dialogHeight + 'px' : props.dialogHeight,

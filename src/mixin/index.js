@@ -1,6 +1,6 @@
-import VuePivottable from './Pivottable'
-import VuePivottableUi from './PivottableUi'
-import TableRenderer from './TableRenderer'
+import VuePivottable from '@/../vue2-pivot/Pivottable'
+import VuePivottableUi from '@/../vue2-pivot/PivottableUi'
+import TableRenderer from '@/../vue2-pivot/TableRenderer'
 
 import {
   aggregatorTemplates,

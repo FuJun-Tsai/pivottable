@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2>thePivottable</h2>
-    <thePivottable
+    <h2>Pivottable</h2>
+    <Pivottable
     :title="pivotTitle"
     :data="pivotData"
     :rendererName="pivotRendererName"
@@ -13,10 +13,10 @@
     :locales="locales"
     :locale="'en'"
     >
-    </thePivottable>
+    </Pivottable>
   </div>
   <div>
-    <h2>thePivottableUI</h2>
+    <h2>PivottableUI</h2>
     <!-- <PivottableUi
     :title="pivotTitle"
     :data="pivotData"
@@ -75,7 +75,7 @@
             </VueDraggable>
           </td>
           <td>
-            <thePivottable
+            <Pivottable
             :data="[pivotTitle, ...pivotData]"
             :rendererName="pivotRendererName"
             :aggregatorName="pivotAggregatorName"
@@ -86,7 +86,7 @@
             :locales="locales"
             :locale="'en'"
             >
-            </thePivottable>
+            </Pivottable>
           </td>
         </tr>
       </tbody>
@@ -95,7 +95,7 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import thePivottable from '@/components/thePivottable';
+import Pivottable from '@/components/Pivottable';
 import PivottableUi from '@/components/PivottableUi';
 import { PivotUtilities } from '@/mixin/index';
 
@@ -168,4 +168,4 @@ const locales = ref({
     }
   }
 });
-</script>
+</script>vue2-pivot/index

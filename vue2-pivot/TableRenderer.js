@@ -1,4 +1,4 @@
-import { PivotData } from '../helper/utils'
+import { PivotData } from '../src/helper/utils'
 import defaultProps from './common'
 function redColorScaleGenerator (values) {
   const min = Math.min.apply(Math, values)

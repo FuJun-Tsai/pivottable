@@ -1111,4 +1111,4 @@ const dialogShowing = ref(false);
     }
   }
 }
-</style>
+</style>vue2-pivot/index

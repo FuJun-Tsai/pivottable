@@ -5,7 +5,7 @@ import router from './router';
 // pivot + JQ
 import jquery from 'jquery';
 // import 'pivottable/dist/pivot.js';
-import './mixin/pivot.js';
+// import '@/mixin/pivot.js';
 import '@/mixin/vue-pivottable.css';
 // import 'pivottable/dist/pivot.min.css';
 // import 'jquery-ui-dist/jquery-ui.js';

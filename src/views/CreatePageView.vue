@@ -58,178 +58,6 @@
             @pivotTableDelete="pivotTableDelete($event, blockIndex)"
             @chartDataGet="chartDataGet($event, blockIndex)"
             />
-            <!-- <div class="mx-auto mb-3">
-              <div class="border mb-2 p-2">
-                <p class="text-center mb-0">所有欄位</p>
-                <VueDraggable
-                class="d-flex justify-content-center flex-wrap"
-                style="gap: 4px;"
-                v-model="block.pivotOption.pivotTitle"
-                :group="{name: 'keys', pull: 'clone', put: false}"
-                handle=".pvtAttr"
-                preventOnFilter="false"
-                >
-                  <DraggableAttribute
-                  v-for="item in block.pivotOption.pivotTitle"
-                  :name="item"
-                  :key="item"
-                  :option="block.pivotOption.valueFilter[item]"
-                  :isBtnsPanel="true"
-                  @valueFilterUpdate="valueFilterUpdate"
-                  />
-                </VueDraggable>
-              </div>
-              <div
-              class="d-flex"
-              style="gap: 8px;"
-              >
-                <div class="border p-2">
-                  <p class="text-center mb-0">列標籤</p>
-                  <VueDraggable
-                  class="d-flex flex-column align-items-center h-100"
-                  style="gap: 4px;"
-                  v-model="block.pivotOption.pivotRow"
-                  group="keys"
-                  handle=".pvtAttr"
-                  preventOnFilter="false"
-                  >
-                    <DraggableAttribute
-                    v-for="item in block.pivotOption.pivotRow"
-                    :name="item"
-                    :key="item"
-                    :option="block.pivotOption.valueFilter[item]"
-                    :isBtnsPanel="false"
-                    @valueFilterUpdate="valueFilterUpdate"
-                    @dragBtnDelete="dragBtnDelete($event, 'rows', settingIndex)"
-                    />
-                  </VueDraggable>
-                </div>
-
-                <div class="border p-2" style="flex: 1 1 auto">
-                  <div class="d-flex mb-3" style="gap: 4px;">
-
-                    <div style="width: 100px; flex: 1 1 auto">
-                      <div class="mb-2">
-                        <p class="text-center mb-0">欄標籤</p>
-                        <VueDraggable
-                        class="d-flex justify-content-center h-100"
-                        style="gap: 4px; min-height: 36px;"
-                        v-model="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotCol"
-                        group="keys"
-                        handle=".pvtAttr"
-                        preventOnFilter="false"
-                        >
-                          <DraggableAttribute
-                          v-for="item in block.pivotOption.pivotSetting[pivotTablePage - 1].pivotCol"
-                          :name="item"
-                          :key="item"
-                          :option="block.pivotOption.valueFilter[item]"
-                          :isBtnsPanel="false"
-                          @valueFilterUpdate="valueFilterUpdate"
-                          @dragBtnDelete="dragBtnDelete($event, 'cols')"
-                          />
-                        </VueDraggable>
-                      </div>
-                      <div class="overflow-auto">
-                        <TableRenderer
-                        v-for="index in block.pivotOption.pivotSetting.length"
-                        v-show="index === pivotTablePage"
-                        :key="index"
-                        :title="block.pivotOption.pivotTitle"
-                        :data="block.pivotOption.pivotData"
-                        :rendererName="'scroll table'"
-                        :aggregatorName="block.pivotOption.pivotSetting[index - 1].pivotAggregator"
-                        :cols="block.pivotOption.pivotSetting[index - 1].pivotCol"
-                        :rows="block.pivotOption.pivotRow"
-                        :vals="block.pivotOption.pivotSetting[index - 1].pivotValue"
-                        :valueFilter="block.pivotOption.valueFilter"
-                        :rowTotal="true"
-                        :colTotal="true"
-                        @treeDataExport="chartDataGet($event, index - 1, block)"
-                        />
-                      </div>
-                    </div>
-
-                    <div style="flex: 0 0 200px">
-                      <p class="text-center mb-0">統計方式</p>
-                      <select class="select mb-3" v-model="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotAggregator">
-                        <option
-                        v-for="(val, key) in aggregatorlocale"
-                        :key="val"
-                        :value="val"
-                        >
-                          {{ key }}
-                        </option>
-                      </select>
-                      <p class="text-center mb-0">統計值</p>
-                      <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
-                        <span
-                        v-if="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
-                        class="text-nowrap"
-                        >
-                          分子
-                        </span>
-                        <select
-                        v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(block.pivotOption.pivotSetting[pivotTablePage - 1].pivotAggregator) === false"
-                        class="select"
-                        v-model="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotValue[0]"
-                        >
-                          <option
-                          v-for="(val) in block.pivotOption.pivotTitle"
-                          :key="val"
-                          :value="val">
-                            {{ val }}
-                          </option>
-                        </select>
-                      </div>
-
-                      <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
-                        <span
-                        v-if="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
-                        class="text-nowrap"
-                        >
-                          分母
-                        </span>
-                        <select
-                        v-if="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
-                        class="select"
-                        v-model="block.pivotOption.pivotSetting[pivotTablePage - 1].pivotValue[1]"
-                        >
-                          <option
-                          v-for="(val) in block.pivotOption.pivotTitle"
-                          :key="val"
-                          :value="val">
-                            {{ val }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-
-                  </div>
-                  <div class="d-flex justify-content-center" style="gap: 4px;">
-                    <span>
-                      <n-pagination
-                      v-model:page="pivotTablePage"
-                      :page-count="block.pivotOption.pivotSetting.length"
-                      />
-                    </span>
-                    <n-button
-                    strong secondary type="primary" size="small"
-                    @click="pivotSettingAdd(block)"
-                    >
-                      新增
-                    </n-button>
-                    <n-button
-                    v-if="block.pivotOption.pivotSetting.length > 1"
-                    strong secondary type="error" size="small"
-                    @click="pivotSettingDelete"
-                    >
-                      移除
-                    </n-button>
-                  </div>
-                </div>
-              </div>
-            </div> -->
           </template>
         </CommonDialogComponent>
         <!-- 圖表設定 -->
@@ -238,8 +66,9 @@
         @closeDialog="dialogClose"
         >
           <template #body>
-            <h4 class="text-center">圖表設定</h4>
-              <ChartSettingComponent/>
+            <ChartSettingComponent
+            :block="block"
+            />
           </template>
         </CommonDialogComponent>
         <!-- 採計資料 -->
@@ -255,124 +84,6 @@
             @tableDataUpdate="tableDataUpdate($event, block)"
             @tableDataDelete="tableDataDelete($event, block)"
             />
-            <!-- <div class="d-flex" style="height: calc(100% - 40px);">
-              <div
-              class="overflow-auto"
-              style="flex: auto;"
-              >
-                <table class="w-100 text-center">
-                  <thead class="position-sticky top-0">
-                    <tr>
-                      <th
-                      class="text-nowrap p-2"
-                      v-for="(title, titleIndex) in block.pivotOption.pivotTitle"
-                      :key="title"
-                      >
-                        <span
-                        v-if="pivotTitleTempIndex !== titleIndex"
-                        @click="pivotTitleSelect(title, titleIndex)"
-                        >
-                          {{ title }}
-                        </span>
-                        <div
-                        class="d-flex flex-row"
-                        style="gap: 4px;"
-                        v-if="pivotTitleTempIndex === titleIndex"
-                        >
-                          <n-input
-                          v-model:value="pivotTitleTemp"
-                          type="text"
-                          :placeholder="title"
-                          />
-                          <n-button
-                          quaternary
-                          type="warning"
-                          @click="pivotTitleUpdate"
-                          >
-                            更新
-                          </n-button>
-                        </div>
-                      </th>
-                      <th class="action position-sticky end-0">
-                        操作
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody class="overflow-auto">
-                    <tr
-                    v-for="(data, dataIndex) in block.pivotOption.pivotData"
-                    :class="{ 'selected': pivotDataTempIndex === dataIndex }"
-                    :key="data"
-                    >
-                      <td
-                      class="px-2 py-2"
-                      style="vertical-align: middle;"
-                      v-for="item in data"
-                      :key="`${dataIndex}-${item}`"
-                      >
-                        <span>
-                          {{ item }}
-                        </span>
-                      </td>
-                      <td class="action position-sticky end-0 px-2 py-2">
-                        <n-button
-                        quaternary
-                        type="warning"
-                        @click="pivotDataSelect(dataIndex)"
-                        >
-                          編輯
-                        </n-button>
-                        <n-button
-                        quaternary
-                        type="error"
-                        @click="pivotDataDelete(dataIndex)"
-                        >
-                          刪除
-                        </n-button>
-                      </td>
-                    </tr>
-                    <tr class="updateTemp position-sticky bottom-0 bg-white">
-                      <td
-                      class="px-2 py-2"
-                      v-for="(item, index) in pivotTitle" :key="item" style="vertical-align: middle;"
-                      >
-                        <n-input
-                        v-model:value="pivotDataTemp[index]"
-                        type="text"
-                        :placeholder="pivotTitle[index]"
-                        @paste="()=>{console.log(123)}"
-                        />
-                      </td>
-                      <td class="action position-sticky end-0 bg-white px-2 py-2">
-                        <n-button
-                        quaternary
-                        type="success"
-                        v-if="pivotDataTempIndex === -1"
-                        @click="pivotDataAdd"
-                        >
-                          新增
-                        </n-button>
-                        <n-button
-                        quaternary
-                        type="warning"
-                        v-if="pivotDataTempIndex > -1"
-                        @click="pivotDataUpdate"
-                        >
-                          更新
-                        </n-button>
-                        <n-button
-                        quaternary
-                        type="error"
-                        @click="pivotDataTempReset"
-                        >
-                          還原
-                        </n-button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div> -->
           </template>
         </CommonDialogComponent>
       </template>
@@ -387,7 +98,6 @@ import CommonDialogComponent from '@/components/CommonDialogComponent';
 import PiovtTableComponent from '@/CreatePageComponents/PiovtTableComponent';
 import DataTableComponent from '@/CreatePageComponents/DataTableComponent';
 import ChartSettingComponent from '@/CreatePageComponents/ChartSettingComponent';
-
 
 // echart
 import { use } from 'echarts/core';
@@ -753,33 +463,18 @@ const pivotTableDelete = function(pivotTableIndex, blockIndex){
   pageSetting.value[0].blocks[blockIndex].chartData.splice(pivotTableIndex, 1);
 }
 
-const pivotTablePage = ref(1);
-
-const aggregatorlocale = ref({
-  '筆數': 'Count',
-  '不同結果的筆數': 'Count Unique Values',
-  '列出項目': 'List Unique Values',
-  '總合': 'Sum',
-  '整數加總': 'Integer Sum',
-  '平均': 'Average',
-  '中位數': 'Median',
-  '樣本變異數': 'Sample Variance',
-  '樣本標準差': 'Sample Standard Deviation',
-  '最小值': 'Minimum',
-  '最大值': 'Maximum',
-  '採計第一筆': 'First',
-  '採計最後一筆': 'Last',
-  '平均總合': 'Sum over Sum',
-  '總計百分比': 'Sum as Fraction of Total',
-  '列總計百分比': 'Sum as Fraction of Rows',
-  '欄總計百分比': 'Sum as Fraction of Columns',
-  '筆數百分比': 'Count as Fraction of Total',
-  '列筆數百分比': 'Count as Fraction of Rows',
-  '欄筆數百分比': 'Count as Fraction of Columns'
-});
 
 const chartDataGet = function(pivotObj, blockIndex){
-  pageSetting.value[0].blocks[blockIndex].chartData[pivotObj.tableIndex] = pivotObj.value;
+  // 數據處理，配合pivottable的回傳，取用特定值
+  let chartData = {};
+  Object.entries(pivotObj.value).forEach(branch => {
+    chartData[branch[0]] = {};
+    Object.entries(branch[1]).map(item => {
+      chartData[branch[0]][item[0]] = item[1].value();
+    })
+  });
+  pageSetting.value[0].blocks[blockIndex].chartData[pivotObj.tableIndex] = chartData;
+
   pageSetting.value[0].blocks[blockIndex].chartStack = [];
   pageSetting.value[0].blocks[blockIndex].chartStack[0] = Object.values(pivotObj.value).reduce((arr, dataRow) => {
     Object.keys(dataRow).forEach(item => {
@@ -884,9 +579,8 @@ const chartSeriesExport = function(blockSetting){
     .forEach((tree, treeIndex) => {
       Object.entries(tree[1]).forEach((branch, branchIndex)=>{
         let branchName = branch[0].split('\x00').join('-');
-        // 這裡
         if(result[index].find(item => item.name === branchName)){
-          result[index].find(item => item.name === branchName).data[treeIndex] = branch[1].value();
+          result[index].find(item => item.name === branchName).data[treeIndex] = branch[1];
         } else {
           let data = Object.keys(blockSetting.chartData[0]).map(() => null);
           let obj = {
@@ -921,7 +615,7 @@ const chartSeriesExport = function(blockSetting){
             });
           }
 
-          data[treeIndex] = branch[1].value();
+          data[treeIndex] = branch[1];
           result[index].push(obj);
         }
         colorIndex += 1;
@@ -1030,8 +724,6 @@ const dialogClose = function(){
   isShowDataTable.value = false;
   isShowChartSetting.value = false;
 }
-
-// ===================
 
 const tableDataAdd = function(dataArray, block){
   block.pivotOption.pivotData.push(dataArray);

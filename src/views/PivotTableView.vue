@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2 class="text-center">thePivottable</h2>
-    <thePivottable
+    <h2 class="text-center">Pivottable</h2>
+    <Pivottable
     :title="pivotTitle"
     :data="pivotData"
     :rendererName="pivotRendererName"
@@ -13,12 +13,12 @@
     :locales="locales"
     :locale="'en'"
     >
-    </thePivottable>
+    </Pivottable>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue';
-import thePivottable from '@/components/thePivottable';
+import Pivottable from '@/components/Pivottable';
 import { PivotUtilities } from '@/mixin/index';
 
 const pivotTitle = ref(['消費日期', '顧客姓名', '商品種類', '顏色', '單品價格', '銷售數量', '銷售總額', '顧客等級', '銷售店鋪', '銷售人員']);
@@ -66,4 +66,4 @@ const locales = ref({
     }
   }
 });
-</script>
+</script>vue2-pivot/index

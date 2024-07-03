@@ -1,4 +1,4 @@
-import { aggregators, locales } from '../helper/utils'
+import { aggregators, locales } from '../src/helper/utils'
 
 export default {
   props: {

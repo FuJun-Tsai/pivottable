@@ -1,172 +1,180 @@
 <template>
-  <div class="mx-auto mb-3">
-    <div class="border mb-2 p-2">
-      <p class="text-center mb-0">所有欄位</p>
-      <VueDraggable
-      class="d-flex justify-content-center flex-wrap"
-      style="gap: 4px;"
-      v-model="pivotTitle"
-      :group="{name: 'keys', pull: 'clone', put: false}"
-      handle=".pvtAttr"
-      preventOnFilter="false"
-      >
-        <DraggableAttribute
-        v-for="item in pivotTitle"
-        :name="item"
-        :key="item"
-        :option="valueFilter[item]"
-        :isBtnsPanel="true"
-        @valueFilterUpdate="valueFilterUpdate"
-        />
-      </VueDraggable>
-    </div>
+  <div
+  class="d-flex"
+  style="height: calc(100% - 40px); gap: 4px;"
+  >
     <div
-    class="d-flex"
-    style="gap: 8px;"
+    class="overflow-auto mx-auto"
+    style="flex: auto;"
     >
-      <div class="border p-2">
-        <p class="text-center mb-0">列標籤</p>
+      <div class="border mb-2 p-2">
+        <p class="text-center mb-0">所有欄位</p>
         <VueDraggable
-        class="d-flex flex-column align-items-center h-100"
+        class="d-flex justify-content-center flex-wrap"
         style="gap: 4px;"
-        v-model="pivotRow"
-        group="keys"
+        v-model="pivotTitle"
+        :group="{name: 'keys', pull: 'clone', put: false}"
         handle=".pvtAttr"
         preventOnFilter="false"
         >
           <DraggableAttribute
-          v-for="item in pivotRow"
+          v-for="item in pivotTitle"
           :name="item"
           :key="item"
           :option="valueFilter[item]"
-          :isBtnsPanel="false"
+          :isBtnsPanel="true"
           @valueFilterUpdate="valueFilterUpdate"
-          @dragBtnDelete="dragBtnDelete($event, 'rows', settingIndex)"
           />
         </VueDraggable>
       </div>
-
-      <div class="border p-2" style="flex: 1 1 auto">
-        <div class="d-flex mb-3" style="gap: 4px;">
-
-          <div style="width: 100px; flex: 1 1 auto">
-            <div class="mb-2">
-              <p class="text-center mb-0">欄標籤</p>
-              <VueDraggable
-              class="d-flex justify-content-center h-100"
-              style="gap: 4px; min-height: 36px;"
-              v-model="pivotSetting[pivotTablePage - 1].pivotCol"
-              group="keys"
-              handle=".pvtAttr"
-              preventOnFilter="false"
-              >
-                <DraggableAttribute
-                v-for="item in pivotSetting[pivotTablePage - 1].pivotCol"
-                :name="item"
-                :key="item"
-                :option="valueFilter[item]"
-                :isBtnsPanel="false"
-                @valueFilterUpdate="valueFilterUpdate"
-                @dragBtnDelete="dragBtnDelete($event, 'cols')"
-                />
-              </VueDraggable>
-            </div>
-            <div class="overflow-auto">
-              <TableRenderer
-              v-for="index in pivotSetting.length"
-              :key="index"
-              v-show="index === pivotTablePage"
-              :title="pivotTitle"
-              :data="pivotData"
-              :rendererName="'scroll table'"
-              :aggregatorName="pivotSetting[index - 1].pivotAggregator"
-              :cols="pivotSetting[index - 1].pivotCol"
-              :rows="pivotRow"
-              :vals="pivotSetting[index - 1].pivotValue"
-              :valueFilter="valueFilter"
-              :rowTotal="true"
-              :colTotal="true"
-              @treeDataExport="chartDataGet($event, index - 1)"
-              />
-            </div>
-          </div>
-
-          <div style="flex: 0 0 200px">
-            <p class="text-center mb-0">統計方式</p>
-            <select class="select mb-3" v-model="pivotSetting[pivotTablePage - 1].pivotAggregator">
-              <option
-              v-for="(val, key) in aggregatorlocale"
-              :key="val"
-              :value="val"
-              >
-                {{ key }}
-              </option>
-            </select>
-            <p class="text-center mb-0">統計值</p>
-            <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
-              <span
-              v-if="pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
-              class="text-nowrap"
-              >
-                分子
-              </span>
-              <select
-              v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(pivotSetting[pivotTablePage - 1].pivotAggregator) === false"
-              class="select"
-              v-model="pivotSetting[pivotTablePage - 1].pivotValue[0]"
-              >
-                <option
-                v-for="(val) in pivotTitle"
-                :key="val"
-                :value="val">
-                  {{ val }}
-                </option>
-              </select>
-            </div>
-
-            <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
-              <span
-              v-if="pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
-              class="text-nowrap"
-              >
-                分母
-              </span>
-              <select
-              v-if="pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
-              class="select"
-              v-model="pivotSetting[pivotTablePage - 1].pivotValue[1]"
-              >
-                <option
-                v-for="(val) in pivotTitle"
-                :key="val"
-                :value="val">
-                  {{ val }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-        </div>
-        <div class="d-flex justify-content-center" style="gap: 4px;">
-          <span>
-            <n-pagination
-            v-model:page="pivotTablePage"
-            :page-count="pivotSetting.length"
+      <div
+      class="d-flex"
+      style="gap: 8px;"
+      >
+        <div class="border p-2">
+          <p class="text-center mb-0">列標籤</p>
+          <VueDraggable
+          class="d-flex flex-column align-items-center h-100"
+          style="gap: 4px;"
+          v-model="pivotRow"
+          group="keys"
+          handle=".pvtAttr"
+          preventOnFilter="false"
+          >
+            <DraggableAttribute
+            v-for="item in pivotRow"
+            :name="item"
+            :key="item"
+            :option="valueFilter[item]"
+            :isBtnsPanel="false"
+            @valueFilterUpdate="valueFilterUpdate"
+            @dragBtnDelete="dragBtnDelete($event, 'rows', settingIndex)"
             />
-          </span>
-          <n-button
-          strong secondary type="primary" size="small"
-          @click="pivotTableAdd(block)"
-          >
-            新增
-          </n-button>
-          <n-button
-          v-if="pivotSetting.length > 1"
-          strong secondary type="error" size="small"
-          @click="pivotTableDelete"
-          >
-            移除
-          </n-button>
+          </VueDraggable>
+        </div>
+
+        <div class="border p-2" style="flex: 1 1 auto">
+          <div class="d-flex mb-3" style="gap: 4px;">
+
+            <div style="width: 100px; flex: 1 1 auto">
+              <div class="mb-2">
+                <p class="text-center mb-0">欄標籤</p>
+                <VueDraggable
+                class="d-flex justify-content-center h-100"
+                style="gap: 4px; min-height: 36px;"
+                v-model="pivotSetting[pivotTablePage - 1].pivotCol"
+                group="keys"
+                handle=".pvtAttr"
+                preventOnFilter="false"
+                >
+                  <DraggableAttribute
+                  v-for="item in pivotSetting[pivotTablePage - 1].pivotCol"
+                  :name="item"
+                  :key="item"
+                  :option="valueFilter[item]"
+                  :isBtnsPanel="false"
+                  @valueFilterUpdate="valueFilterUpdate"
+                  @dragBtnDelete="dragBtnDelete($event, 'cols')"
+                  />
+                </VueDraggable>
+              </div>
+              <div class="overflow-auto">
+                <TableRenderer
+                v-for="index in pivotSetting.length"
+                :key="index"
+                v-show="index === pivotTablePage"
+                :title="pivotTitle"
+                :data="pivotData"
+                :rendererName="'scroll table'"
+                :aggregatorName="pivotSetting[index - 1].pivotAggregator"
+                :cols="pivotSetting[index - 1].pivotCol"
+                :rows="pivotRow"
+                :vals="pivotSetting[index - 1].pivotValue"
+                :valueFilter="valueFilter"
+                :rowTotal="true"
+                :colTotal="true"
+                @treeDataExport="chartDataGet($event, index - 1)"
+                />
+              </div>
+            </div>
+
+            <div style="flex: 0 0 200px">
+              <p class="text-center mb-0">統計方式</p>
+              <select class="select mb-3" v-model="pivotSetting[pivotTablePage - 1].pivotAggregator">
+                <option
+                v-for="(val, key) in aggregatorlocale"
+                :key="val"
+                :value="val"
+                >
+                  {{ key }}
+                </option>
+              </select>
+              <p class="text-center mb-0">統計值</p>
+              <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
+                <span
+                v-if="pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
+                class="text-nowrap"
+                >
+                  分子
+                </span>
+                <select
+                v-if="['Count as Fraction of Total', 'Count as Fraction of Rows', 'Count as Fraction of Column'].includes(pivotSetting[pivotTablePage - 1].pivotAggregator) === false"
+                class="select"
+                v-model="pivotSetting[pivotTablePage - 1].pivotValue[0]"
+                >
+                  <option
+                  v-for="(val) in pivotTitle"
+                  :key="val"
+                  :value="val">
+                    {{ val }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="d-flex align-items-center flex-nowrap mb-3" style="gap: 4px;">
+                <span
+                v-if="pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
+                class="text-nowrap"
+                >
+                  分母
+                </span>
+                <select
+                v-if="pivotSetting[pivotTablePage - 1].pivotAggregator === 'Sum over Sum'"
+                class="select"
+                v-model="pivotSetting[pivotTablePage - 1].pivotValue[1]"
+                >
+                  <option
+                  v-for="(val) in pivotTitle"
+                  :key="val"
+                  :value="val">
+                    {{ val }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+          <div class="d-flex justify-content-center" style="gap: 4px;">
+            <span>
+              <n-pagination
+              v-model:page="pivotTablePage"
+              :page-count="pivotSetting.length"
+              />
+            </span>
+            <n-button
+            strong secondary type="primary" size="small"
+            @click="pivotTableAdd(block)"
+            >
+              新增
+            </n-button>
+            <n-button
+            v-if="pivotSetting.length > 1"
+            strong secondary type="error" size="small"
+            @click="pivotTableDelete"
+            >
+              移除
+            </n-button>
+          </div>
         </div>
       </div>
     </div>

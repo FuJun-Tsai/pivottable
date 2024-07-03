@@ -3,7 +3,7 @@ import DraggableAttribute from './DraggableAttribute'
 import Dropdown from './Dropdown'
 import Pivottable from './Pivottable'
 import TableRenderer from './TableRenderer'
-import { PivotData, getSort, sortAs, aggregators } from '../helper/utils'
+import { PivotData, getSort, sortAs, aggregators } from '../src/helper/utils'
 import draggable from 'vuedraggable'
 export default {
   name: 'vue-pivottable-ui',
